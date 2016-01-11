@@ -1,0 +1,27 @@
+{
+	"name": "otc-slack-broker",
+	"author": "Benoit Jaunin <jauninb@fr.ibm.com>",
+	"contributors": ["Jerome Lanneluc <jerome_lanneluc@fr.ibm.com>"],
+	"dependencies": {
+		"async": "*",
+		"log4js": "*",
+		"express": "*",
+		"nconf": "*",
+		"underscore": "*",
+		"nano": "*",
+		"body-parser": "*",
+		"agentkeepalive": "0.2.3",
+		"nano-doc-updater": "git+https://github.ibm.com/org-ids/node-nano-doc-updater#v0.0.1",
+		"request": "*"
+	},
+	"devDependencies": {
+		"q": "*",
+		"tap-spec": "^3.0.0",
+		"tap-xunit": "^1.1.1",
+		"tape": "^4.0.0"
+	},
+	"scripts": {
+		"start": "node index",
+		"test": "node test/tapeSlack"
+	}
+}

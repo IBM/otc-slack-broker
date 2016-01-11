@@ -1,0 +1,9 @@
+{
+	"PROTOCOL": "https",
+	"PORT": "3900",
+	"url": "https://dev.stage1.ng.bluemix.net",
+	"schemes": "https,http",
+    "uaa": {
+        "fetchTokenURL": "https://login.stage1.ng.bluemix.net/UAALoginServerWAR/oauth/token"
+    }
+}

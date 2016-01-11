@@ -1,0 +1,17 @@
+{
+    "levels": {
+        "slack-broker": "ERROR",
+        "request": "OFF"
+    },
+    "appenders": [
+        {
+            "type": "console",
+            "layout": {
+                "type": "pattern",
+                "pattern": "[%d] [%p] [%c] %m",
+                "tokens": {
+                }
+            }
+        }
+    ]
+}

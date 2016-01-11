@@ -1,0 +1,351 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "This swagger document describes the options and endpoints of the ToDoList Broker - the reference broker implementation.",
+		"version": "1.0.0",
+		"title": "IBM OTC ToDoList Broker API"
+	},
+	"host": "localhost:3400",
+	"basePath": "/todolist-broker/api/v1",
+	"tags": [
+		{
+			"name": "service_instances",
+			"description": "Endpoints for fetching information about a service instance."
+		},
+		{
+			"name": "monitoring",
+			"description": "Endpoints for monitoring. Note: The base URL for these endpoints are /."
+		}
+	],
+	"schemes": [
+		"https", "http"
+	],
+	"paths": {
+		"/service_instances/{sid}": {
+			"put": {
+				"tags": [
+					"service_instances"
+				],
+				"summary": "Create or update a service instance",
+				"description": "Returns information about the created or updated service instance.",
+				"operationId": "createOrUpdateServiceInstance",
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "sid",
+						"in": "path",
+						"description": "The API generated unique id of a service instance",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "body",
+			            "name": "body",
+			            "description": "New toolchain details",
+			            "required": false,
+			            "schema": {
+			              "$ref": "#/definitions/createOrUpdateServiceInstance"
+			            }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful request",
+						"schema": {
+							"$ref": "#/definitions/putServiceInstanceResponse"
+						}
+					},
+					"400": {
+						"description": "Returned when the request parameters are invalid."
+					},
+					"401": {
+						"description": "Returned when a user is not authenticated with an auth header."
+					},
+					"403": {
+						"description": "Returned when a user makes a request to something they are not entitled to."
+					},
+					"500": {
+						"description": "Returned when error occurs while responding to the request."
+					}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
+			},
+			"delete": {
+				"tags": [
+					"service_instances"
+				],
+				"summary": "Delete a service instance",
+				"description": "Removes a service instance.",
+				"operationId": "unbindServiceInstance",
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "sid",
+						"in": "path",
+						"description": "The API generated unique id of a service instance",
+						"type": "string",
+						"required": true
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Successful request"
+					},
+					"401": {
+						"description": "Returned when a user is not authenticated with an auth header."
+					},
+					"403": {
+						"description": "Returned when a user makes a request to something they are not entitled to."
+					},
+					"500": {
+						"description": "Returned when error occurs while responding to the request."
+					}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
+			}
+		},
+		"/service_instances/{sid}/toolchains": {
+			"delete": {
+				"tags": [
+					"service_instances"
+				],
+				"summary": "Delete a service instance from all toolchains",
+				"description": "Removes a service instance from all toolchains.",
+				"operationId": "unbindServiceInstanceFromAllToolchains",
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "sid",
+						"in": "path",
+						"description": "The API generated unique id of a service instance",
+						"type": "string",
+						"required": true
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Successful request"
+					},
+					"401": {
+						"description": "Returned when a user is not authenticated with an auth header."
+					},
+					"500": {
+						"description": "Returned when error occurs while responding to the request."
+					}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
+			}
+		},
+		"/service_instances/{sid}/toolchains/{tid}": {
+			"put": {
+				"tags": [
+					"service_instances"
+				],
+				"summary": "Bind a service instance to a toolchain",
+				"description": "Returns information about a service instance.",
+				"operationId": "bindServiceInstanceToToolchain",
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "sid",
+						"in": "path",
+						"description": "The API generated unique id of a service instance",
+						"type": "string",
+						"required": true
+					},
+					{
+						"name": "tid",
+						"in": "path",
+						"description": "A toolchain id to bind to the service instance",
+						"type": "string",
+						"required": true
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Successful request"
+					},
+					"401": {
+						"description": "Returned when a user is not authenticated with an auth header."
+					},
+					"403": {
+						"description": "Returned when a user makes a request to something they are not entitled to."
+					},
+					"500": {
+						"description": "Returned when error occurs while responding to the request."
+					}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
+			},
+			"delete": {
+				"tags": [
+					"service_instances"
+				],
+				"summary": "Delete a service instance from a toolchain",
+				"description": "Removes a service instance.",
+				"operationId": "unbindServiceInstanceFromToolchain",
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "sid",
+						"in": "path",
+						"description": "The API generated unique id of a service instance",
+						"type": "string",
+						"required": true
+					},
+					{
+						"name": "tid",
+						"in": "path",
+						"description": "A toolchain id to unbind from the service instance",
+						"type": "string",
+						"required": true
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Successful request"
+					},
+					"401": {
+						"description": "Returned when a user is not authenticated with an auth header."
+					},
+					"403": {
+						"description": "Returned when a user makes a request to something they are not entitled to."
+					},
+					"500": {
+						"description": "Returned when error occurs while responding to the request."
+					}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
+			}
+		},
+		"/version": {
+			"get": {
+				"tags": [
+					"monitoring"
+				],
+				"summary": "Get the build version of the node application",
+				"description": "Returns the build number of the current running node application.",
+				"operationId": "version",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Successful request",
+						"schema": {
+			              "type": "object",
+			              "$ref":"#/definitions/getVersion"
+			            }
+					}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
+			}
+		}
+	},
+	"securityDefinitions": {
+		"api_key": {
+			"type": "apiKey",
+			"name": "Authorization",
+			"in": "header"
+		}
+	},
+	"definitions": {
+		"createOrUpdateServiceInstance": {
+	  		"id": "Create or update service instance",
+	  		"description": "Body structure for creating or updating a service instance.",
+	    	"properties": {
+				"parameters": {
+					"description": "Arbitrary JSON data. Note: To generate a label for the service instance you must include the following JSON field: {\"label\" : \"your-label\"}",
+					"type": "string",
+					"example": "Any well-formed JSON data. Not necessarily a String",
+					"required": false
+				},
+				"service_id": {
+					"description": "The unique id of the service that an instance is being created from",
+					"type": "string",
+					"example": "git",
+					"required": true
+				},
+				"organization_guid": {
+					"description": "The organization the service instance is associated with",
+					"type": "string",
+					"example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e",
+					"required": true
+				}
+			}
+	    },
+	    "getVersion": {
+	  	  "description": "Response structure for GET version",
+	        "properties": {
+	      		"build": {
+	      		  "type": "string",
+	      		  "example": "5",
+	      		  "required": true
+	      		}
+      		}
+  		},
+		"putServiceInstanceResponse": {
+			"properties": {
+				"instance_id": {
+					"description": "The created or updated service instance",
+					"type": "string",
+					"example": "4f107490-3820-400b-a008-f7f38d4163ed"
+				},
+				"dashboard_url": {
+					"description": "The URL of a user-facing user interface for this instance of a service",
+					"type": "string",
+					"example": "https://docker.ng.bluemix.net/todo/4f107490-3820-400b-a008-f7f38d4163ed"
+				},
+				"parameters": {
+					"description": "Arbitrary JSON data  Note: To generate a label for the service instance you must include the following JSON field: {\"label\" : \"your-label\"}",
+					"type": "string",
+					"example": "Any well-formed JSON data. Not necessarily a String"
+				},
+				"organization_guid": {
+					"description": "The organization the service instance is associated with",
+					"type": "string",
+					"example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e",
+					"required": false
+				}
+			},
+			"required": [
+				"instance_id", "dashboard_url"
+			]
+		}
+	}
+}
+
