@@ -12,7 +12,9 @@ var nconf = require('nconf'),
     Q = require('q'),
     tiamUtils = require('./tiamTestUtils.js'),
     // testCommon = require('test-common'),
-    test = require('tape');
+    Slack = require('slack-node'),
+    test = require('tape')
+;
 
 nconf.env("__");
 
@@ -40,6 +42,12 @@ var mockToolchainId = "c234adsf-111";
 var header = {};
 var authenticationTokens = [];
 var mockUserArray = [];
+
+var slack_channel = {};
+slack_channel.name = "tape_bot" + new Date().valueOf();
+slack_channel.topic = "Slack Channel for Tape Test of OTC-Slack-Broker";
+
+var slack = new Slack(nconf.get("slack-token"));
 
 test('Slack Broker - Test Setup', function (t) {
     mockUserArray = nconf.get('userArray');
@@ -95,7 +103,7 @@ test('Slack Broker - Test Authentication', function (t) {
 });
 
 test('Slack Broker - Test PUT instance', function (t) {
-    t.plan(4);
+    t.plan(5);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {};
@@ -109,94 +117,97 @@ test('Slack Broker - Test PUT instance', function (t) {
                 .then(function(resultNoOrg) {
                     t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
                     body.organization_guid = nconf.get('test_app_org_guid');
-                    body.parameters = "This is an update to the service instance.";
-
+                    
+                    body.parameters = {
+                    	api_token: nconf.get("slack-token"),
+                    	channel_name: slack_channel.name,
+                    	channel_topic: slack_channel.topic
+                    }
+                    
+                    //t.comment(slack_channel.name);
+                    
                     putRequest(url, {header: header, body: JSON.stringify(body)})
                         .then(function(results) {
                             t.equal(results.statusCode, 200, 'did the put instance call succeed?');
                             t.ok(results.body.instance_id, 'did the put instance call return an instance_id?');
+                            slack_channel.id = results.body.instance_id;
+                            
+                            //t.comment(slack_channel.id);
+                            
+                            // Ensure Slack Channel has been created
+                            slack.api("channels.info", {channel: slack_channel.id}, function(err, response) {
+                            	if (err) {
+                            		t.end(err)
+                            	} else if (!response.ok) {
+                            		t.fail(response.error);
+                            	} else {
+                                	t.ok(response.ok, 'did the slack channel got created appropriately?')                            		
+                            	}
+                            });                            
                         });
                 });
     });
 });
 
-test('Slack Broker - Test PUT update instance w/ parameters', function (t) {
+test('Slack Broker - Test PUT update instance w/o parameters', function (t) {
+    t.plan(2);
+
+    var body = {
+        'service_id': 'slack',
+        'organization_guid': nconf.get('test_app_org_guid'),
+        'parameters' : ''
+    };
+
+    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
+    putRequest(url, {header: header, body: JSON.stringify(body)})
+        .then(function(resultFromPut) {
+            t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
+            t.ok(resultFromPut.body.instance_id, 'did the put instance call return an instance_id?');
+    });
+});
+
+test('Slack Broker - Test PUT update instance with channel_id (archived channel)', function (t) {
     t.plan(3);
 
-    var body = {
-        'service_id': 'slack',
-        'organization_guid': nconf.get('test_app_org_guid'),
-        'parameters' : ''
-    };
+    // archive the channel
+    slack.api("channels.archive", {channel: slack_channel.id}, function(error, response) {
+    	if (error) {
+    		t.end(error)
+    	} else {
+    		if (!response.ok) {
+    			t.fail(response.error);
+    		} else {
+    		    var body = {
+		            'service_id': 'slack',
+		            'organization_guid': nconf.get('test_app_org_guid'),
+		            'parameters' : {
+		            	api_token: nconf.get("slack-token"),
+		            	channel_id: slack_channel.id        	
+		            }
+		        };
 
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
-    putRequest(url, {header: header, body: JSON.stringify(body)})
-        .then(function(resultFromPut) {
-            t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
-            t.ok(resultFromPut.body.instance_id, 'did the put instance call return an instance_id?');
-            body.parameters = 'This is an update to the service instance.';
-
-            putRequest(url, {header: header, body: JSON.stringify(body)})
-                .then(function(resultFromUpdate) {
-                    t.equal(resultFromUpdate.body.parameters, body.parameters, 'did the update instance w/ parameters call succeed?');
-            });
+		        var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
+		        putRequest(url, {header: header, body: JSON.stringify(body)})
+		            .then(function(resultFromPut) {
+		                t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
+		                t.equal(resultFromPut.body.instance_id, slack_channel.id, 'did the put instance call return the appropriate channel id?');
+                        // Ensure Slack Channel has been created
+                        slack.api("channels.info", {channel: slack_channel.id}, function(err, response) {
+                        	if (err) {
+                        		t.end(err);
+                        	} else if (!response.ok) {
+                        		t.fail(response.error);
+                        	} else {
+                            	t.ok(!response.channel.is_archived, 'did the slack channel get unarchived?');
+                        	}
+                        });                            
+		        });    			
+    		}
+    	}
     });
+    
 });
 
-test('Slack Broker - Test PUT update instance w/ label', function (t) {
-    t.plan(6);
-
-    var body = {
-        'service_id': 'slack',
-        'organization_guid': nconf.get('test_app_org_guid'),
-        'parameters' : ''
-    };
-
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
-    putRequest(url, {header: header, body: JSON.stringify(body)})
-        .then(function(resultFromPut) {
-            t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
-            t.ok(resultFromPut.body.instance_id, 'did the put instance call return an instance_id?');
-            body.parameters = { "label" : "NewLabel" };
-
-            putRequest(url, {header: header, body: JSON.stringify(body)})
-                .then(function(putWithFirstLabel) {
-                    t.equal(putWithFirstLabel.statusCode, 200, 'did the update instance call succeed?');
-                    t.equal(putWithFirstLabel.body.parameters.label, body.parameters.label, 'did the update instance w/ new label call succeed?');
-                    body.parameters = { "label" : "NewLabel1" };
-
-                    putRequest(url, {header: header, body: JSON.stringify(body)})
-                        .then(function(putWithUpdatedLabel) {
-                            t.equal(putWithUpdatedLabel.statusCode, 200, 'did the update instance call succeed?');
-                            t.equal(putWithUpdatedLabel.body.parameters.label, body.parameters.label, 'did the update instance w/ label call succeed?');
-                    });
-            });
-    });
-});
-
-test('Slack Broker - Test PUT update instance w/ empty label', function (t) {
-    t.plan(4);
-
-    var body = {
-        'service_id': 'slack',
-        'organization_guid': nconf.get('test_app_org_guid'),
-        'parameters' : ''
-    };
-
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
-    putRequest(url, {header: header, body: JSON.stringify(body)})
-        .then(function(resultFromPut) {
-            t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
-            t.ok(resultFromPut.body.instance_id, 'did the put instance call return an instance_id?');
-            body.parameters = { "label" : "" };
-
-            putRequest(url, {header: header, body: JSON.stringify(body)})
-                .then(function(resultFromUpdate) {
-                    t.equal(resultFromUpdate.statusCode, 200, 'did the update instance call succeed?');
-                    t.equal(resultFromUpdate.body.parameters.label, body.parameters.label, 'did the update instance w/ empty label call succeed?');
-            });
-    });
-});
 
 test('Slack Broker - Test PUT update instance w/ an invalid org id', function (t) {
     t.plan(2);
@@ -329,6 +340,19 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
     });
 });
 
+test('Slack Broker - Archive Test Slack Channel', function(t) {
+	t.plan(1);
+    slack.api("channels.archive", {channel: slack_channel.id}, function(err, response) {
+    	if (err) {
+    		t.end(err);
+    	} else if (!response.ok) {
+    		t.fail(response.error);
+    	} else {
+        	t.ok(response.ok, 'did the slack channel get archived for deletion?');
+    	}
+    });                            
+});
+
 // Monitoring endpoints
 test('Slack Broker - Test GET status', function (t) {
     t.plan(1);
@@ -355,6 +379,7 @@ test('Slack Broker - Test GET version', function (t) {
             }
     });
 });
+
 
 // Utility functions
 

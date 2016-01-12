@@ -11,5 +11,6 @@
     ],
     "auth-header": "Y2Y6",
     "test_app_guid": "99b0fed4-9d53-4bd5-8efa-bb4237a35430",
-    "test_app_org_guid": "8a5b49de-1a3c-4075-b3ec-bd25d90ae2a1"
+    "test_app_org_guid": "8a5b49de-1a3c-4075-b3ec-bd25d90ae2a1",
+    "slack-token":"xoxp-13948444357-13953293954-13959136117-fb748ccba5"
 }
