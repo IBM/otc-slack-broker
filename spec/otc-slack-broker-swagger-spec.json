@@ -1,12 +1,12 @@
 {
 	"swagger": "2.0",
 	"info": {
-		"description": "This swagger document describes the options and endpoints of the ToDoList Broker - the reference broker implementation.",
-		"version": "1.0.0",
-		"title": "IBM OTC ToDoList Broker API"
+		"description": "This swagger document describes the options and endpoints of the Slack Broker.",
+		"version": "0.0.1",
+		"title": "IBM OTC Slack Broker API"
 	},
-	"host": "localhost:3400",
-	"basePath": "/todolist-broker/api/v1",
+	"host": "localhost:3900",
+	"basePath": "/slack-broker/api/v1",
 	"tags": [
 		{
 			"name": "service_instances",
@@ -289,15 +289,15 @@
 	  		"description": "Body structure for creating or updating a service instance.",
 	    	"properties": {
 				"parameters": {
-					"description": "Arbitrary JSON data. Note: To generate a label for the service instance you must include the following JSON field: {\"label\" : \"your-label\"}",
+					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic",
 					"type": "string",
-					"example": "Any well-formed JSON data. Not necessarily a String",
-					"required": false
+				    "example": "{\"api_token\": \"xoxp-13948444357-13953293954-13959136117-xxxxxxx\",\"channel_name\": \"My Slack Channel\",\"channel_topic\": \"My topic for channel 3\"}",
+				    "required": true
 				},
 				"service_id": {
 					"description": "The unique id of the service that an instance is being created from",
 					"type": "string",
-					"example": "git",
+					"example": "slack",
 					"required": true
 				},
 				"organization_guid": {
@@ -323,17 +323,17 @@
 				"instance_id": {
 					"description": "The created or updated service instance",
 					"type": "string",
-					"example": "4f107490-3820-400b-a008-f7f38d4163ed"
+					"example": "C0JB1M6M9"
 				},
 				"dashboard_url": {
 					"description": "The URL of a user-facing user interface for this instance of a service",
 					"type": "string",
-					"example": "https://docker.ng.bluemix.net/todo/4f107490-3820-400b-a008-f7f38d4163ed"
+					"example": "https://cloudplatform.slack.com/messages/channel-toolchain-1"
 				},
 				"parameters": {
-					"description": "Arbitrary JSON data  Note: To generate a label for the service instance you must include the following JSON field: {\"label\" : \"your-label\"}",
+					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic",
 					"type": "string",
-					"example": "Any well-formed JSON data. Not necessarily a String"
+					"example": "{'api_token': 'xoxp-13948444357-13953293954-13959136117-xxxxxxx','channel_name': 'my-channel-3'}"
 				},
 				"organization_guid": {
 					"description": "The organization the service instance is associated with",

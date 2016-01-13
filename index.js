@@ -25,6 +25,11 @@ var
  url = require("url")
 ;
 
+// Swgager (temporary until within pipeline stage/job)
+var swaggerUiMiddleware = require("swagger-ui-middleware"),
+otcSlackBrokerSwaggerSpecFile = path.join(__dirname, "/spec", "otc-slack-broker-swagger-spec.json"),
+otcSlackBrokerSwaggerSpec = require(otcSlackBrokerSwaggerSpecFile);
+
 // Configuration for logging
 log4js.configure("./config/log4js.json", {
     reloadSecs: 30
@@ -115,7 +120,6 @@ function configureAppSync(db) {
 	  if (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] !== 'https') {
 	    return res.status(501).send('https required');
 	  }
-
 	  next();
 	})
 	
@@ -127,6 +131,14 @@ function configureAppSync(db) {
 	.get("/version", function (req, res/*, next*/) {
         return res.status(200).send({build: process.env.BUILD_NUMBER});
     })
+    
+    .use("/swagger", swaggerUiMiddleware(
+        _.extend(otcSlackBrokerSwaggerSpec, {
+            "host": url.parse(nconf.get("url")).host
+        }, {
+            "schemes": nconf.get("schemes").split(",")
+        })
+    ))
     
     // Try to fetch the user profile from the Authorization header.
 	.use(fetchAuthMiddleware())
