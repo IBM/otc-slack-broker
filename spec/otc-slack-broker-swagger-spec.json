@@ -48,7 +48,15 @@
 			            "schema": {
 			              "$ref": "#/definitions/createOrUpdateServiceInstance"
 			            }
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
 					}
+					
 				],
 				"responses": {
 					"200": {
@@ -93,6 +101,13 @@
 						"description": "The API generated unique id of a service instance",
 						"type": "string",
 						"required": true
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
 					}
 				],
 				"responses": {
@@ -134,6 +149,13 @@
 						"description": "The API generated unique id of a service instance",
 						"type": "string",
 						"required": true
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
 					}
 				],
 				"responses": {
@@ -179,6 +201,13 @@
 						"description": "A toolchain id to bind to the service instance",
 						"type": "string",
 						"required": true
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
 					}
 				],
 				"responses": {
@@ -225,6 +254,13 @@
 						"description": "A toolchain id to unbind from the service instance",
 						"type": "string",
 						"required": true
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
 					}
 				],
 				"responses": {
@@ -274,7 +310,25 @@
 					}
 				]
 			}
-		}
+		},
+		"/status": {
+            "get": {
+                "tags": [
+                    "monitoring"
+                ],
+                "summary": "Get the status of the Slack Broker node application",
+                "description": "Returns the status of the current running Slack Broker node application.",
+                "operationId": "statusEndpoint",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Slack Broker is running"
+                    }
+                }
+            }
+        }
 	},
 	"securityDefinitions": {
 		"api_key": {
@@ -289,9 +343,13 @@
 	  		"description": "Body structure for creating or updating a service instance.",
 	    	"properties": {
 				"parameters": {
-					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic",
+					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic attributes (ie \"channel_id=\"C0J8MUXSA\")",
 					"type": "string",
-				    "example": "{\"api_token\": \"xoxp-13948444357-13953293954-13959136117-xxxxxxx\",\"channel_name\": \"My Slack Channel\",\"channel_topic\": \"My topic for channel 3\"}",
+				    "example": {
+				    	"api_token": "xoxp-13948444357-13953293954-13959136117-xxxxxxx",
+				    	"channel_name": "Channel Toolchain 1",
+				    	"channel_topic": "The topic for channel dedicated to toolchain 1"
+				    },
 				    "required": true
 				},
 				"service_id": {
@@ -333,7 +391,7 @@
 				"parameters": {
 					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic",
 					"type": "string",
-					"example": "{'api_token': 'xoxp-13948444357-13953293954-13959136117-xxxxxxx','channel_name': 'my-channel-3'}"
+					"example": "{'api_token': 'xoxp-13948444357-13953293954-13959136117-xxxxxxx','channel_name': 'channel-toolchain-1'}"
 				},
 				"organization_guid": {
 					"description": "The organization the service instance is associated with",

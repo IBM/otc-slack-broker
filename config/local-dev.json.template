@@ -3,9 +3,6 @@
 	"PORT": "3900",
 	"url": "http://localhost:3900",
 	"schemes": "http",
-	"services": {
-		"slack": "https://slack.com/api"
-	},
 	"_vcap_application": {
 		"application_uris":["localhost:3900"]
 	},

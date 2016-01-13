@@ -1,9 +1,9 @@
 {
     "url": "https://otc-slack-broker-test.stage1.ng.bluemix.net",
     "schemes": "https",
-    "services": {
-		"slack": "https://slack.com/api"
-    },
+	"services": {
+		"slack-api": "https://slack.com/api/"
+	},
     "_vcap_application": {
         "application_uris":["https://otc-slack-broker-test.stage1.ng.bluemix.net"]
     },

@@ -1,6 +1,6 @@
 {
 	"url": "https://otc-slack-broker-dev.stage1.ng.bluemix.net",
 	"services": {
-		"slack": "https://slack.com/api"
+		"slack-api": "https://slack.com/api/"
 	}
 }

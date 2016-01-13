@@ -2,8 +2,7 @@
     "url": "http://docker.ng.bluemix.net",
     "schemes": "http",
 	"services": {
-		"slack": "https://slack.com/api",
-        "url" : "http://docker.ng.bluemix.net"
+		"slack-api": "https://slack.com/api/"
 	},
     "_vcap_application": {
         "application_uris": ["docker.ng.bluemix.net"]
