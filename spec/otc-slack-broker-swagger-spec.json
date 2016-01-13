@@ -343,7 +343,7 @@
 	  		"description": "Body structure for creating or updating a service instance.",
 	    	"properties": {
 				"parameters": {
-					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic attributes (ie \"channel_id=\"C0J8MUXSA\")",
+					"description": "JSON data providing Slack context  Note: To use a existing channel, either set channel_id attribute instead or channel_name with the encoded id or channel name. For a new channel to create, the channel_name needs to be set (and channel_topic attribute). (ie \"channel_id=\"C0J8MUXSA\")",
 					"type": "string",
 				    "example": {
 				    	"api_token": "xoxp-13948444357-13953293954-13959136117-xxxxxxx",
