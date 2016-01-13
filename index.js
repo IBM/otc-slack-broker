@@ -123,6 +123,10 @@ function configureAppSync(db) {
 	  next();
 	})
 	
+	.use(log4js.connectLogger(log4js.getLogger("request"), {
+	    format: ":method :url :status - :response-time ms"
+	}))
+	
 	.use(bodyParser.json())
 	.get("/status", function (req, res/*, next*/) {
         return res.status(200).send("The Slack Broker is running.");
@@ -172,6 +176,8 @@ function configureAppSync(db) {
 			return res.send(page);
 		});
 	})
+	
+	.use("/slack-broker/event", require("./lib/middleware/event"))
 
 	//Handle errors
 	.use(function(error, req, res, next) {
