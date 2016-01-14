@@ -177,7 +177,7 @@ function configureAppSync(db) {
 		});
 	})
 	
-	.use("/slack-broker/event", require("./lib/middleware/event"))
+	.use("/slack-broker/event", require("./lib/event/event"))
 
 	//Handle errors
 	.use(function(error, req, res, next) {

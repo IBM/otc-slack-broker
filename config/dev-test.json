@@ -2,6 +2,7 @@
     "url": "https://otc-slack-broker-test.stage1.ng.bluemix.net",
     "schemes": "https",
 	"services": {
+		"pipeline-ui": "https://devops.stage1.ng.bluemix.net/pipelines/",
 		"slack-api": "https://slack.com/api/"
 	},
     "_vcap_application": {
