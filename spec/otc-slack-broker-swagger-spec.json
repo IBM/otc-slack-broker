@@ -391,7 +391,7 @@
 				"parameters": {
 					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic",
 					"type": "string",
-					"example": "{'api_token': 'xoxp-13948444357-13953293954-13959136117-xxxxxxx','channel_name': 'channel-toolchain-1'}"
+					"example": "{'api_token': 'xoxp-13948444357-13953293954-13959136117-xxxxxxx','channel_name': 'channel-toolchain-1', 'label': '# channel-toolchain-1'}"
 				},
 				"organization_guid": {
 					"description": "The organization the service instance is associated with",
