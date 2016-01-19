@@ -5,5 +5,11 @@
 	"schemes": "https,http",
     "uaa": {
         "fetchTokenURL": "https://login.stage1.ng.bluemix.net/UAALoginServerWAR/oauth/token"
-    }
+    },
+	"icons": {
+		"github": "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png",
+		"toolchain": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png",
+		"pipeline": "https://cibroker.ng.bluemix.net/hexIcon_32.png",
+		"bluemix": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png"
+	}
 }

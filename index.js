@@ -144,14 +144,17 @@ function configureAppSync(db) {
         })
     ))
     
-    // Try to fetch the user profile from the Authorization header.
-	.use(fetchAuthMiddleware())
-	
 	// Tack a handle to the Services Database to every request for use in the middleware.
 	.use(function (req, res, next) {
 		req.servicesDb = db;
 		next();
 	})
+
+	.use("/slack-broker/event", require("./lib/event/event"))
+    
+    // Try to fetch the user profile from the Authorization header.
+	.use(fetchAuthMiddleware())
+	
 
 	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
 	.get("/slack-broker", function (req, res/*, next*/) {
@@ -176,8 +179,6 @@ function configureAppSync(db) {
 			return res.send(page);
 		});
 	})
-	
-	.use("/slack-broker/event", require("./lib/event/event"))
 
 	//Handle errors
 	.use(function(error, req, res, next) {

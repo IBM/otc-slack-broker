@@ -3,7 +3,8 @@
     "schemes": "https",
 	"services": {
 		"pipeline-ui": "https://devops.stage1.ng.bluemix.net/pipelines/",
-		"slack-api": "https://slack.com/api/"
+		"slack-api": "https://slack.com/api/",
+		"otc-api": "http://otc-api-test.stage1.ng.bluemix.net/api/v1"
 	},
     "_vcap_application": {
         "application_uris":["https://otc-slack-broker-test.stage1.ng.bluemix.net"]
