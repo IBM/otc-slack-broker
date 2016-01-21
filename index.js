@@ -149,14 +149,14 @@ function configureAppSync(db) {
 		req.servicesDb = db;
 		next();
 	})
-
-	.use("/slack-broker/event", require("./lib/event/event"))
     
     // Try to fetch the user profile from the Authorization header.
 	.use(fetchAuthMiddleware())
 	
+	.use("/slack-broker/event/v1", require("./lib/event/event"))
 
 	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
+	
 	.get("/slack-broker", function (req, res/*, next*/) {
 		db.view("slack", "service_instances", function (err, r) {
 			var page = "" +
