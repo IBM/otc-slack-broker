@@ -151,7 +151,7 @@ function configureAppSync(db) {
 	})
 
 	// Temporary in order to have message coming from webhookmanager pipeline
-	.use("/slack-broker/event/v1/unsecured", require("./lib/event/event"))
+	.use("/slack-broker/unsecured/event/v1/", require("./lib/event/event"))
 
 	.get("/slack-broker", function (req, res/*, next*/) {
 		db.view("slack", "service_instances", function (err, r) {
