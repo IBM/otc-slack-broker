@@ -4,6 +4,6 @@
 		"pipeline-ui": "https://devops.stage1.ng.bluemix.net/pipelines/",
 		"slack-api": "https://slack.com/api/",
 		"otc-api": "https://otc-api.stage1.ng.bluemix.net/api/v1",
-		"otc-webhook-manager" : "https://otc-webhook-manager-dev.stage1.ng.bluemix.net"	
+		"otc-webhook-manager" : "https://otc-webhook-manager.stage1.ng.bluemix.net"	
 	}
 }
