@@ -1,16 +1,13 @@
 {
     "userArray": [
         {
-            "testusername": "idsb3t4@us.ibm.com",
-            "testpassword": "JhubPa88_0923"
-        },
-        {
-            "testusername": "idsb3t1@us.ibm.com",
-            "testpassword": "JhubPa88_0923"
+            "testusername": "jaunin.b@fr.ibm.com",
+            "testpassword": "4RFVBGT5"
         }
     ],
     "auth-header": "Y2Y6",
     "test_app_guid": "99b0fed4-9d53-4bd5-8efa-bb4237a35430",
-    "test_app_org_guid": "8a5b49de-1a3c-4075-b3ec-bd25d90ae2a1",
+    "test_app_org_guid": "8d34d127-d3db-43cd-808b-134b388f1646",
+    "XXXXXtest_app_org_guid": "8a5b49de-1a3c-4075-b3ec-bd25d90ae2a1",
     "slack-token":"xoxp-13948444357-13953293954-13959136117-fb748ccba5"
 }

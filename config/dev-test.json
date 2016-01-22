@@ -4,7 +4,8 @@
 	"services": {
 		"pipeline-ui": "https://devops.stage1.ng.bluemix.net/pipelines/",
 		"slack-api": "https://slack.com/api/",
-		"otc-api": "http://otc-api-test.stage1.ng.bluemix.net/api/v1"
+		"otc-api": "https://otc-api-test.stage1.ng.bluemix.net/api/v1",
+		"otc-webhook-manager" : "https://otc-webhook-manager-test.stage1.ng.bluemix.net"
 	},
     "_vcap_application": {
         "application_uris":["https://otc-slack-broker-test.stage1.ng.bluemix.net"]

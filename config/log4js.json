@@ -1,6 +1,6 @@
 {
     "levels": {
-        "slack-broker": "ERROR",
+        "otc-slack-broker": "DEBUG",
         "request": "OFF"
     },
     "appenders": [
