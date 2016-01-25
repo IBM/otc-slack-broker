@@ -41,6 +41,7 @@ var mockServiceInstanceId = "tape" + new Date().getTime();
 var mockToolchainId = "06178d7e-cf36-4a80-ad82-8c9f428f3ea9";
 
 var header = {};
+var organization_guid = null;
 var authenticationTokens = [];
 var mockUserArray = [];
 
@@ -64,6 +65,7 @@ test('Slack Broker - Test Setup', function (t) {
                 authenticationTokens[i] = accessToken;
                 if(typeof authenticationTokens[0] !== 'undefined' && i === 0) {
                     header.Authorization = authenticationTokens[0];
+                    organization_guid = mockUserArray[i].organization_guid;
                 }
                 t.pass('Authentication succeeded for mock user: ' + mockUserArray[i].testusername);
             });
@@ -78,7 +80,7 @@ test('Slack Broker - Test Authentication', function (t) {
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {
         'service_id': 'slack',
-        'organization_guid': nconf.get('test_app_org_guid')
+        'organization_guid': organization_guid
     };
     var auth = {
         'Authorization': ''
@@ -119,7 +121,7 @@ test('Slack Broker - Test PUT instance', function (t) {
             putRequest(url, {header: header, body: JSON.stringify(body)})
                 .then(function(resultNoOrg) {
                     t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
-                    body.organization_guid = nconf.get('test_app_org_guid');
+                    body.organization_guid = organization_guid;
                                         
                     body.parameters = {
                     	api_token: nconf.get("slack-token"),
@@ -157,7 +159,7 @@ test('Slack Broker - Test PUT update instance w/o parameters', function (t) {
 
     var body = {
         'service_id': 'slack',
-        'organization_guid': nconf.get('test_app_org_guid'),
+        'organization_guid': organization_guid,
         'parameters' : ''
     };
 
@@ -173,7 +175,7 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
 	
     var body = {
         'service_id': 'slack',
-        'organization_guid': nconf.get('test_app_org_guid'),
+        'organization_guid': organization_guid,
         'parameters' : {
         	channel_name: slack_channel.name        	
         }
@@ -237,7 +239,7 @@ test('Slack Broker - Test PUT update instance with channel_id (archived channel)
     		} else {
     		    var body = {
 		            'service_id': 'slack',
-		            'organization_guid': nconf.get('test_app_org_guid'),
+		            'organization_guid': organization_guid,
 		            'parameters' : {
 		            	api_token: nconf.get("slack-token"),
 		            	channel_id: slack_channel.id_bis        	
@@ -373,7 +375,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
 
     var body = {
         'service_id': 'slack',
-        'organization_guid': nconf.get('test_app_org_guid'),
+        'organization_guid': organization_guid,
         'parameters' : {
         	api_token: nconf.get("slack-token"),
         	channel_id: slack_channel.id        	
