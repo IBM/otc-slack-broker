@@ -1,0 +1,71 @@
+{
+	"toolchain_id": "765d5ca8-3f33-4f00-b46e-1bf0d886cd76",
+	"service_id": "pipeline",
+	"instance_id": "123456789",
+	"payload": {
+		"pipeline": {
+			"enabled": true,
+			"lastModified": 1453451696336,
+			"status": "OK",
+			"viewed": false,
+			"credentialsId": "7aabeecf-a8b0-4162-afeb-528ce038bd4c",
+			"id": "c365fc5b-5584-4a95-941e-5edbd87369cb",
+			"custom_image_enabled": false,
+			"name": null,
+			"stageJobCount": 2,
+			"dateCreated": 1453451688691,
+			"restrictDeployments": false,
+			"restrictModifications": false,
+			"jazzHubProjectId": "765d5ca8-3f33-4f00-b46e-1bf0d886cd76"
+		},
+		"event": "stageStarted",
+		"stage": {
+			"id": "d92992b6-6c75-4f7f-a7b0-707a40cb50bd",
+			"enabled": true,
+			"jobs": [{
+				"errorMessage": null,
+				"buildType": "none",
+				"artifactName": null,
+				"status": "OK",
+				"fetchInput": true,
+				"testFilePattern": null,
+				"type": "builder.engine2",
+				"componentType": "Builder",
+				"failStage": true,
+				"id": "96b1e719-773a-4fd2-867d-06767f703402",
+				"directoryOffset": "",
+				"enableTests": false,
+				"componentName": "Build",
+				"archiveDir": "",
+				"docker_image": null,
+				"buildScript": null,
+				"categories": ["builder"],
+				"triggers": [],
+				"produceArtifacts": true
+			}],
+			"name": "Build Stage",
+			"properties": []
+		},
+		"execution": {
+			"stageId": "d92992b6-6c75-4f7f-a7b0-707a40cb50bd",
+			"id": "879120d0-82ab-4af1-8483-ab6f2565b043",
+			"duration": 18,
+			"modifiedAt": 1453451863801,
+			"inputs": [{
+				"revisionId": "df8e7d40f8bb0a556ad3c09e028ace54d0cb0e8c",
+				"inputId": "e1626346-41fa-4869-a3e6-96a9bad82973"
+			}],
+			"status": "NEW",
+			"createdAt": 1453451863801,
+			"jobExecutions": [{
+				"jobId": "96b1e719-773a-4fd2-867d-06767f703402",
+				"jobExecutionId": "fa03fcab-1e02-4e99-8839-759f9078d098"
+			}],
+			"number": 1,
+			"properties": [],
+			"successful": false,
+			"running": false,
+			"requestedBy": "fa0c65b2-0f37-4c6f-8c38-0c64509a21ad"
+		}
+	}
+}
