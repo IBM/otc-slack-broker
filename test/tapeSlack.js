@@ -38,15 +38,17 @@ var defaultHeaders = {
 };
 
 var mockServiceInstanceId = "tape" + new Date().getTime();
-var mockToolchainId = "c234adsf-111";
+var mockToolchainId = "06178d7e-cf36-4a80-ad82-8c9f428f3ea9";
 
 var header = {};
 var authenticationTokens = [];
 var mockUserArray = [];
 
 var slack_channel = {};
-slack_channel.name = "tape_bot" + new Date().valueOf();
-slack_channel.topic = "Slack Channel for Tape Test of OTC-Slack-Broker";
+var now = new Date();
+slack_channel.name = "tape_bot" + (now.getFullYear() - 2000) + "" + now.getMonth() + "" + now.getDate() + "-";
+slack_channel.name += now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
+//slack_channel.topic = "Slack Channel for Tape Test of OTC-Slack-Broker";
 
 var slack = new Slack(nconf.get("slack-token"));
 
@@ -122,7 +124,7 @@ test('Slack Broker - Test PUT instance', function (t) {
                     body.parameters = {
                     	api_token: nconf.get("slack-token"),
                     	channel_name: slack_channel.name.replace("bot", "bis"),
-                    	channel_topic: slack_channel.topic
+                    	//channel_topic: slack_channel.topic
                     }
                     
                     //t.comment(slack_channel.name);
@@ -199,11 +201,34 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
     });    				
 });
 
+
+test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
+    t.plan(2);
+
+    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId + '/toolchains/'+ mockToolchainId;
+    putRequest(url, {header: header})
+        .then(function(resultsFromBind) {
+        	if (resultsFromBind.statusCode == 200) {
+                t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
+                //t.comment(JSON.stringify(resultsFromBind));
+                if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
+                    t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid ?');            	
+                } else {
+                    t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
+                }        		
+        	} else {
+                t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed (204)?');
+                t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed (204)?');
+        	}
+    });
+});
+
+
 test('Slack Broker - Test PUT update instance with channel_id (archived channel)', function (t) {
     t.plan(3);
 
     // archive the channel
-    slack.api("channels.archive", {channel: slack_channel.id}, function(error, response) {
+    slack.api("channels.archive", {channel: slack_channel.id_bis}, function(error, response) {
     	if (error) {
     		t.end(error)
     	} else {
@@ -215,7 +240,7 @@ test('Slack Broker - Test PUT update instance with channel_id (archived channel)
 		            'organization_guid': nconf.get('test_app_org_guid'),
 		            'parameters' : {
 		            	api_token: nconf.get("slack-token"),
-		            	channel_id: slack_channel.id        	
+		            	channel_id: slack_channel.id_bis        	
 		            }
 		        };
 
@@ -223,9 +248,9 @@ test('Slack Broker - Test PUT update instance with channel_id (archived channel)
 		        putRequest(url, {header: header, body: JSON.stringify(body)})
 		            .then(function(resultFromPut) {
 		                t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
-		                t.equal(resultFromPut.body.instance_id, slack_channel.id, 'did the put instance call return the appropriate channel id?');
+		                t.equal(resultFromPut.body.instance_id, slack_channel.id_bis, 'did the put instance call return the appropriate channel id?');
                         // Ensure Slack Channel has been created
-                        slack.api("channels.info", {channel: slack_channel.id}, function(err, response) {
+                        slack.api("channels.info", {channel: slack_channel.id_bis}, function(err, response) {
                         	if (err) {
                         		t.end(err);
                         	} else if (!response.ok) {
@@ -258,28 +283,6 @@ test('Slack Broker - Test PUT update instance w/ an invalid org id', function (t
                 .then(function(resultFromUpdate) {
                    t.equal(resultFromUpdate.statusCode, 403, 'did the put instance call fail when the user is not part of the orginization?');
                 });
-    });
-});
-
-
-test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
-    t.plan(2);
-
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId + '/toolchains/'+ mockToolchainId;
-    putRequest(url, {header: header})
-        .then(function(resultsFromBind) {
-        	if (resultsFromBind.statusCode == 200) {
-                t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
-                //t.comment(JSON.stringify(resultsFromBind));
-                if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
-                    t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid ?');            	
-                } else {
-                    t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
-                }        		
-        	} else {
-                t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed (204)?');
-                t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed (204)?');
-        	}
     });
 });
 
