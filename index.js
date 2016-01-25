@@ -184,7 +184,8 @@ function configureAppSync(db) {
     // Try to fetch the user profile from the Authorization header.
 	.use(fetchAuthMiddleware())
 	
-	.use("/slack-broker/event/v1", require("./lib/event/event"))
+	// Endpoint for the lifecycle messaging store
+	.use("/slack-broker/api/v1/messaging", require("./lib/event/event"))
 
 	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
 	
