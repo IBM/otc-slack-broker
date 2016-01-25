@@ -233,6 +233,7 @@ test('Slack Broker - Test Messaging Store Like Event', function (t) {
 	// Simulate a Pipeline event
 	var message_store_pipeline_event = require("./ms_pipeline_stage_started");
 	message_store_pipeline_event.toolchain_id = mockToolchainId;
+	message_store_pipeline_event.instance_id = mockServiceInstanceId;
 	
     postRequest(messagingEndpoint, {header: header, body: JSON.stringify(message_store_pipeline_event)})
         .then(function(resultFromPost) {
