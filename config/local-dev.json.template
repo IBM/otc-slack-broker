@@ -1,8 +1,14 @@
 {
-	"PROTOCOL": "https",
+	"PROTOCOL": "http",
 	"PORT": "3900",
 	"url": "http://localhost:3900",
 	"schemes": "http",
+	"services": {
+		"slack-api": "https://slack.com/api",
+		"otc-api": "http://localhost:3400/api/v1",
+		"otc-ui": "http://localhost:3100/develop",
+		"otc-webhook-manager" : "http://localhost:3250"
+	},
 	"_vcap_application": {
 		"application_uris":["localhost:3900"]
 	},
