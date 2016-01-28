@@ -11,7 +11,7 @@
 var nconf = require('nconf'),
 request = require('request'),
 path = require('path'),
-tiamClient = require('../lib/middleware/tiam-client')
+tiamClient = require('../lib/client/tiam-client')
 ;
 
 var authenticateTestUserWithTIAM = function(callback, index) {

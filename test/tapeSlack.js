@@ -245,7 +245,28 @@ test('Slack Broker - Test Messaging Store Like Event', function (t) {
 test('Slack Broker - Test Toolchain Lifecycle Like Event', function (t) {
 	t.plan(1);
 	
-	var lifecycle_event = {"description" : "this a toolchain lifecycle event"};
+	var lifecycle_event = {
+			"toolchain_guid": "c2c18129-cac8-4368-a27e-46b5bd75284c",
+			"event": "unbind",
+			"services": [{
+				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack",
+				"uuid": "39a9cc32-0525-4f84-bb09-18242b3beedfservice8",
+				"service_id": "slack",
+				"description": "Coordinate your project and collaborate with project members on Slack",
+				"url": "http://localhost:3900/slack-broker/api",
+				"tags": ["culture",
+				"deliver",
+				"productivity"],
+				"dashboard_url": "https://jauninb.slack.com/messages/channel-test-ui",
+				"parameters": {
+					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
+					"channel_name": "channel-test-ui",
+					"label": "#channel-test-ui"
+				},
+				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646"
+			}]
+		};
+	
 	// Simulate a Toolchain Lifecycle event
     postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(lifecycle_event)})
         .then(function(resultFromPost) {
