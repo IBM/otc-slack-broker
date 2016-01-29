@@ -151,7 +151,7 @@ function configureAppSync(db) {
 	})
 
 	// Temporary in order to have message coming from webhookmanager pipeline
-	.use("/slack-broker/unsecured/event/v1/", require("./lib/event/event"))
+	//.use("/slack-broker/unsecured/event/v1/", require("./lib/event/event"))
 
 	.get("/slack-broker", function (req, res/*, next*/) {
 		db.view("slack", "service_instances", function (err, r) {
@@ -160,18 +160,13 @@ function configureAppSync(db) {
 			"<html><head><title>Slack Service</title></head><body>" +
 			"<p>I'm doing nothing in particular.  Especially when it comes to these service_instances:</p>" +
 			"<table border='1'>"+
-			"<tr><th>Service Instance Id</th><th>Parameters</th><th>Toolchain</th><th>Pipeline Webhooks</th></tr>"+
+			"<tr><th>Service Instance Id</th><th>Parameters</th><th>Toolchain</th></tr>"+
 			_.pluck(r.rows, "value").map(function (serviceInstance) {
-				var pipelineWebhooks = "";
-				if (serviceInstance.pipeline_and_webhook_ids) {
-					pipelineWebhooks = serviceInstance.pipeline_and_webhook_ids.join(",");
-				}
 				return "" +
 				"<tr>" +
 				"<td>" +  serviceInstance._id + "</td>" +
 				"<td><pre>" +  JSON.stringify(serviceInstance.parameters, null, " ") + "</pre></td>" +
 				"<td>" +  serviceInstance.toolchain_ids.join(",") + "</td>" +
-				"<td>" + pipelineWebhooks  + "</td>" +
 				"</tr>";
 			}).join("") +
 			"</table>" +

@@ -275,6 +275,42 @@ test('Slack Broker - Test Toolchain Lifecycle Like Event', function (t) {
 	
 });
 
+test('Slack Broker - Test Bad Event payload', function (t) {
+	t.plan(3);
+	
+	// Message Store Event endpoint
+	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
+
+	// Simulate a Pipeline event
+	// Empry Payload
+	var event = {};
+    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    .then(function(resultFromPost) {
+        t.equal(resultFromPost.statusCode, 400, 'did the bad event payload (1) sending call failed?');
+    });	
+	
+    // Minimal payload 2
+    event.service_id = "n/a";
+    event.toolchain_id = mockToolchainId;
+    event.instance_id = mockServiceInstanceId;
+    event.payload = {};
+    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    .then(function(resultFromPost) {
+        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (2) sending call succeed?');
+    });	
+
+    // Minimal payload 3
+    event.service_id = "pipeline";
+    event.payload.pipeline = {};
+    event.payload.pipeline.event="n/a";
+    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    .then(function(resultFromPost) {
+        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (3) sending call succeed?');
+    });	
+    
+});
+
+
 test('Slack Broker - Test PUT update instance with channel_id (archived channel)', function (t) {
     t.plan(3);
 
