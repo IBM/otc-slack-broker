@@ -8,8 +8,8 @@
     },
 	"icons": {
 		"github": "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png",
-		"toolchain": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png",
-		"pipeline": "https://cibroker.ng.bluemix.net/hexIcon_32.png",
+		"toolchain": "http://blade-resources.mybluemix.net/toolchain-32.png",
+		"pipeline": "http://blade-resources.mybluemix.net/pipeline.png",
 		"bluemix": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png"
 	}
 }
