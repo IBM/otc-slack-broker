@@ -178,7 +178,6 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
 	
     var body = {
         'service_id': 'slack',
-        'organization_guid': organization_guid,
         'parameters' : {
         	channel_name: slack_channel.name        	
         }
@@ -242,7 +241,109 @@ test('Slack Broker - Test Messaging Store Like Event', function (t) {
 	
 });
 
-test('Slack Broker - Test Toolchain Lifecycle Like Event', function (t) {
+test('Slack Broker - Test Toolchain Lifecycle Bind Event', function (t) {
+	t.plan(1);
+	
+	var lifecycle_event = {
+			"toolchain_guid": "c2c18129-cac8-4368-a27e-46b5bd75284c",
+			"event": "bind",
+			"services": [{
+				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack",
+				"uuid": "39a9cc32-0525-4f84-bb09-18242b3beedfservice8",
+				"service_id": "slack",
+				"description": "Coordinate your project and collaborate with project members on Slack",
+				"url": "http://localhost:3900/slack-broker/api",
+				"tags": ["culture",
+				"deliver",
+				"productivity"],
+				"dashboard_url": "https://jauninb.slack.com/messages/channel-test-ui",
+				"parameters": {
+					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
+					"channel_name": "channel-test-ui",
+					"label": "#channel-test-ui"
+				},
+				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646"
+			},
+			{
+				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack...",
+				"uuid": "39a9cc32-0525-4f84-bb09-18242b3beedfservice8..",
+				"service_id": "slack",
+				"description": "Coordinate your project and collaborate with project members on Slack",
+				"url": "http://localhost:3900/slack-broker/api",
+				"tags": ["culture",
+				"deliver",
+				"productivity"],
+				"dashboard_url": "https://jauninb.slack.com/messages/channel-test-ui",
+				"parameters": {
+					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
+					"channel_name": "channel-test-ui-2",
+					"label": "#channel-test-ui-2"
+				},
+				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646"
+			}]
+		};
+	
+	// Simulate a Toolchain Lifecycle event
+    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(lifecycle_event)})
+        .then(function(resultFromPost) {
+            t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event sending call succeed?');
+        });	
+	
+});
+
+test('Slack Broker - Test Toolchain Lifecycle Provision Event', function (t) {
+	t.plan(1);
+	
+	var lifecycle_event = {
+			"toolchain_guid": "36b128ee-c679-4d67-b1f0-cf8f2ce8b4dc",
+			"event": "provision",
+			"services": [{
+				"instance_id": "2858ead1-cb15-4916-91f3-5b3da4c5a5b6",
+				"parameters": {
+					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
+					"channel_name": "bjntest-19-bis",
+					"label": "#bjntest-19-bis"
+				},
+				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646",
+				"state": {
+					"status": "configured"
+				},
+				"dashboard_url": "https://jauninb.slack.com/messages/channel-bjntest-19",
+				"service_id": "slack",
+				"url": "https://otc-slack-broker.stage1.ng.bluemix.net/slack-broker/api",
+				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack",
+				"metadata": {
+					"parameters": {
+						"api_token": {
+							"title": "Slack API authentication token",
+							"description": "Type your API authentication token. You can find your token in the Web API section of the Slack API website.",
+							"type": "string",
+							"required": "true"
+						},
+						"channel_name": {
+							"title": "Slack channel",
+							"description": "Type the name of the Slack channel to post messages to. If you want messages to be posted to a new channel, type a new name. Slack will create the channel and invite you to it.",
+							"type": "string",
+							"required": "true"
+						}
+					}
+				},
+				"toolchain_binding": {
+					"status": "configured",
+					"webhook_id": "c4b9d4da39d5c8d7259086e76520b4b0"
+				}
+			}]
+		};
+	
+	// Simulate a Toolchain Lifecycle event
+    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(lifecycle_event)})
+        .then(function(resultFromPost) {
+            t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event sending call succeed?');
+        });	
+	
+});
+
+test('Slack Broker - Test Toolchain Lifecycle Unbind Event', function (t) {
 	t.plan(1);
 	
 	var lifecycle_event = {
