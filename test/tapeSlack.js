@@ -220,6 +220,26 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
     });    				
 });
 
+test('Slack Broker - Test PATCH update instance with wrong api_key', function (t) {
+    t.plan(1);
+	
+    var body = {
+        'service_id': 'slack',
+        'parameters' : {
+        	api_token: "wrong" + nconf.get("slack-token")
+        }
+    };
+
+    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
+    patchRequest(url, {header: header, body: JSON.stringify(body)})
+        .then(function(resultFromPatch) {
+        	//t.comment(JSON.stringify(resultFromPatch));
+            t.equal(resultFromPatch.statusCode, 400, 'did the patch instance with wrong api key failed ?');
+            //t.comment("resultFromPatch.body=" + JSON.stringify(resultFromPatch.body));
+    });    				
+});
+
+
 
 test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
     t.plan(2);
