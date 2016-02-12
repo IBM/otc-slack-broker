@@ -9,7 +9,7 @@
 	"icons": {
 		"github": "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png",
 		"toolchain": "http://blade-resources.mybluemix.net/toolchain-32.png",
-		"pipeline": "http://blade-resources.mybluemix.net/PL-icon.png",
+		"pipeline": "http://blade-resources.mybluemix.net/pipeline.png",
 		"bluemix": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png"
 	}
 }
