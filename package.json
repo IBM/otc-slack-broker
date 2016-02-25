@@ -14,7 +14,7 @@
 		"nano-doc-updater": "git+https://github.ibm.com/org-ids/node-nano-doc-updater#v0.0.1",
 	    "slack-node": "^0.1.3",
 		"swagger-ui-middleware": "git+https://github.ibm.com/org-ids/node-swagger-ui-middleware#v0.0.1",
-        "otc-tiam-client": "git+https://github.ibm.com/org-ids/otc-tiam-client",
+        "node-tiam-client": "git+https://github.ibm.com/org-ids/node-tiam-client",
 		"request": "*"
 	},
 	"devDependencies": {

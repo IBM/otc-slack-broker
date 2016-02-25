@@ -11,7 +11,7 @@
 var nconf = require('nconf'),
 request = require('request'),
 path = require('path'),
-TIAMClient = require("otc-tiam-client")
+TIAMClient = require("node-tiam-client")
 ;
 
 var authenticateTestUserWithTIAM = function(callback, index) {

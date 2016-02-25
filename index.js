@@ -21,7 +21,7 @@ var
  fetchAuthMiddleware = require("./lib/middleware/fetch-auth"),
  HttpsAgent = require("agentkeepalive").HttpsAgent,
  
- TIAMClient = require("otc-tiam-client"),
+ TIAMClient = require("node-tiam-client"),
 
  path = require("path"),
  url = require("url")
