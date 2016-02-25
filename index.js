@@ -20,6 +20,8 @@ var
  bodyParser = require("body-parser"),
  fetchAuthMiddleware = require("./lib/middleware/fetch-auth"),
  HttpsAgent = require("agentkeepalive").HttpsAgent,
+ 
+ TIAMClient = require("otc-tiam-client"),
 
  path = require("path"),
  url = require("url")
@@ -114,6 +116,8 @@ function configureAppSync(db) {
 	var logPrefix = "[" + logBasePath + ".configureAppSync] ";
 	var app = express();
 
+	var tiamClient = new TIAMClient(nconf.get("TIAM_URL"), nconf.get("TIAM_CLIENT_ID"), nconf.get("TIAM_CLIENT_SECRET"));
+	
 	app
 	// If a request comes in that appears to be http, reject it.
 	.use(function (req, res, next) {
@@ -177,7 +181,7 @@ function configureAppSync(db) {
 	})
 	
     // Try to fetch the user profile from the Authorization header.
-	.use(fetchAuthMiddleware())
+	.use(fetchAuthMiddleware(tiamClient))
 	
 	// Endpoint for the lifecycle messaging store and toolchain api lifecycle events
 	.use("/slack-broker/api/v1/messaging", require("./lib/event/event"))

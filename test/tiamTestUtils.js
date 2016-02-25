@@ -11,7 +11,7 @@
 var nconf = require('nconf'),
 request = require('request'),
 path = require('path'),
-tiamClient = require('../lib/client/tiam-client')
+TIAMClient = require("otc-tiam-client")
 ;
 
 var authenticateTestUserWithTIAM = function(callback, index) {
@@ -60,6 +60,9 @@ module.exports = {
     authenticateTestUserWithTIAM: authenticateTestUserWithTIAM,
 
     getProfile: function(accessToken, callback) {
+
+        var tiamClient = new TIAMClient(nconf.get("TIAM_URL"), nconf.get("TIAM_CLIENT_ID"), nconf.get("TIAM_CLIENT_SECRET"));
+
         var bearerPrefix = accessToken.substring(0,6);
 
         if (bearerPrefix == 'Bearer') {
