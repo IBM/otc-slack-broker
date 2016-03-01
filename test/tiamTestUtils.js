@@ -74,7 +74,7 @@ module.exports = {
                 return callback(err, r);
             }
 
-            console.log(JSON.stringify(r));
+            //console.log(JSON.stringify(r));
             callback(null, r);
         });
     }

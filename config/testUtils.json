@@ -12,5 +12,6 @@
         }
     ],
     "auth-header": "Y2Y6",
-    "slack-token":"xoxp-13948444357-13953293954-13959136117-fb748ccba5"
+    "slack-token-readme": "slack token is for idstest.slack.com, slack user email: jaunin.b@fr.ibm.com , password: zNbPbT",
+    "slack-token":"xoxp-23743188883-23747253174-23746641776-99f4e8c68a"
 }

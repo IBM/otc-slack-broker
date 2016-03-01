@@ -15,6 +15,7 @@ var nconf = require('nconf'),
     Slack = require('slack-node'),
     _ = require('underscore'),
     test = require('tape'),
+    async = require('async'),
 	slackClient = require("../lib/client/slack-client")
 ;
 
@@ -79,9 +80,7 @@ test('Slack Broker - Test Setup', function (t) {
 
 
 test('Slack Broker - Test Channel Name Validation', function (t) {
-	
 	t.plan(6);
-	
 	t.equals(slackClient.validateChannelName("####test"), "test");
 	t.equals(slackClient.validateChannelName("123456789012345678901234567890"), "123456789012345678901", "Was channel name length ok ?");
 	t.equals(slackClient.validateChannelName("   ABCDEF  "), "-abcdef-", "Was channel name with leading and trailing space ok");
@@ -92,7 +91,7 @@ test('Slack Broker - Test Channel Name Validation', function (t) {
 
 // Authentication testing
 test('Slack Broker - Test Authentication', function (t) {
-    t.plan(4);
+    t.plan(5);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {
@@ -102,26 +101,52 @@ test('Slack Broker - Test Authentication', function (t) {
     var auth = {
         'Authorization': ''
     };
-
-    putRequest(url, {header: null, body: JSON.stringify(body)})
-        .then(function(resultNoHeader) {
-            t.equal(resultNoHeader.statusCode, 401, 'did the authentication request with no Auth header fail?');
-
+    
+    async.series([
+        function(callback) {
+            putRequest(url, {header: null, body: JSON.stringify(body)})
+            .then(function(resultNoHeader) {
+                t.equal(resultNoHeader.statusCode, 401, 'did the authentication request with no Auth header fail?');
+                callback();
+            });
+        },
+        function(callback) {
+            putRequest(url, {header: null, body: JSON.stringify(body)})
+            .then(function(resultNoHeader) {
+                t.equal(resultNoHeader.statusCode, 401, 'did the authentication request with no Auth header fail?');
+                callback();
+            });        	
+        },
+        function(callback) {
             putRequest(url, {header: auth, body: JSON.stringify(body)})
-                .then(function(resultNoToken) {
-                    t.equal(resultNoToken.statusCode, 401, 'did the authentication request with an empty Auth header fail?');
-                });
-                auth.Authorization = 'token';
-                putRequest(url, {header: auth, body: JSON.stringify(body)})
-                    .then(function(resultNoBearer) {
-                        t.equal(resultNoBearer.statusCode, 401, 'did the authentication request with no bearer in the Auth header fail?');
-                    });
-                    auth.Authorization = 'BEARER token';
-                    putRequest(url, {header: auth, body: JSON.stringify(body)})
-                    .then(function(resultInvalidToken) {
-                        t.equal(resultInvalidToken.statusCode, 401, 'did the authentication request an invalid token in the Auth header fail?');
-                    });
-    });
+            .then(function(resultNoToken) {
+                t.equal(resultNoToken.statusCode, 401, 'did the authentication request with an empty Auth header fail?');
+                callback();
+            });
+        },
+        function(callback) {
+            auth.Authorization = 'token';
+            putRequest(url, {header: auth, body: JSON.stringify(body)})
+            .then(function(resultNoBearer) {
+                t.equal(resultNoBearer.statusCode, 401, 'did the authentication request with no bearer in the Auth header fail?');
+                callback();
+            });        	
+        },
+        function(callback) {
+            auth.Authorization = 'BEARER token';
+            putRequest(url, {header: auth, body: JSON.stringify(body)})
+            .then(function(resultInvalidToken) {
+                t.equal(resultInvalidToken.statusCode, 401, 'did the authentication request an invalid token in the Auth header fail?');
+                callback();
+            });
+        }
+	], function(err, results) {
+   		if (err) {
+   			t.fail(err);
+   		} else {
+   			t.end();
+   		}
+	});
 });
 
 test('Slack Broker - Test PUT instance', function (t) {
@@ -129,46 +154,60 @@ test('Slack Broker - Test PUT instance', function (t) {
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {};
-
-    putRequest(url, {header: header, body: null})
-        .then(function(resultNoBody) {
-            t.equal(resultNoBody.statusCode, 400, 'did the put instance call with no body fail?');
+    
+    async.series([
+	    function(callback) {
+	        putRequest(url, {header: header, body: null})
+	        .then(function(resultNoBody) {
+	            t.equal(resultNoBody.statusCode, 400, 'did the put instance call with no body fail?');
+	            callback();
+	        });
+	    },
+	    function(callback) {
             body.service_id = 'slack';
-
             putRequest(url, {header: header, body: JSON.stringify(body)})
-                .then(function(resultNoOrg) {
-                    t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
-                    body.organization_guid = organization_guid;
-                                        
-                    body.parameters = {
-                    	api_token: nconf.get("slack-token"),
-                    	channel_name: slack_channel.name.replace("bot", "bis"),
-                    	//channel_topic: slack_channel.topic
-                    }
-                    
-                    //t.comment(slack_channel.name);
-                    
-                    putRequest(url, {header: header, body: JSON.stringify(body)})
-                        .then(function(results) {
-                            t.equal(results.statusCode, 200, 'did the put instance call succeed?');
-                            t.ok(results.body.instance_id, 'did the put instance call return an instance_id?');
-                            slack_channel.id = results.body.instance_id;
-                            
-                            //t.comment("channel.id is " + slack_channel.id);
-                            
-                            // Ensure Slack Channel has been created
-                            slack.api("channels.info", {channel: slack_channel.id}, function(err, response) {
-                            	if (err) {
-                            		t.end(err)
-                            	} else if (!response.ok) {
-                            		t.fail(response.error);
-                            	} else {
-                                	t.ok(response.ok, 'did the slack channel got created appropriately?')                            		
-                            	}
-                            });                            
-                        });
-                });
-    });
+            .then(function(resultNoOrg) {
+                t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
+                callback();
+            });	    	
+	    },
+	    function(callback) {
+            body.organization_guid = organization_guid;
+            body.parameters = {
+            	api_token: nconf.get("slack-token"),
+            	channel_name: slack_channel.name.replace("bot", "bis"),
+            	//channel_topic: slack_channel.topic
+            }
+            putRequest(url, {header: header, body: JSON.stringify(body)})
+            .then(function(results) {
+                t.equal(results.statusCode, 200, 'did the put instance call succeed?');
+                t.ok(results.body.instance_id, 'did the put instance call return an instance_id?');
+                slack_channel.id = results.body.instance_id;
+                callback();
+            });
+	    },
+	    function(callback) {
+            // Ensure Slack Channel has been created
+            slack.api("channels.info", {channel: slack_channel.id}, function(err, response) {
+            	if (err) {
+            		callback(err)
+            	} else if (!response.ok) {
+            		t.fail(response.error);
+            		callback();
+            	} else {
+                	t.ok(response.ok, 'did the slack channel got created appropriately?')
+                	callback();
+            	}
+            });                            
+	    }
+	], function(err, results) {
+   		if (err) {
+   			t.fail(err);
+   		} else {
+   			t.end();
+   		}
+	});
+
 });
 
 test('Slack Broker - Test PUT update instance w/o parameters', function (t) {
@@ -265,7 +304,7 @@ test('Slack Broker - Test Messaging Store Like Event', function (t) {
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 
 	// Simulate a Pipeline event
-	var message_store_pipeline_event = require("./ms_pipeline_stage_started");
+	var message_store_pipeline_event = require("./event_lms_pipeline_stage_started");
 	message_store_pipeline_event.toolchain_id = mockToolchainId;
 	message_store_pipeline_event.instance_id = mockServiceInstanceId;
 	
@@ -276,138 +315,30 @@ test('Slack Broker - Test Messaging Store Like Event', function (t) {
 	
 });
 
-test('Slack Broker - Test Toolchain Lifecycle Bind Event', function (t) {
-	t.plan(1);
+test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	
-	var lifecycle_event = {
-			"toolchain_guid": "c2c18129-cac8-4368-a27e-46b5bd75284c",
-			"event": "bind",
-			"services": [{
-				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack",
-				"uuid": "39a9cc32-0525-4f84-bb09-18242b3beedfservice8",
-				"service_id": "slack",
-				"description": "Coordinate your project and collaborate with project members on Slack",
-				"url": "http://localhost:3900/slack-broker/api",
-				"tags": ["culture",
-				"deliver",
-				"productivity"],
-				"dashboard_url": "https://jauninb.slack.com/messages/channel-test-ui",
-				"parameters": {
-					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
-					"channel_name": "channel-test-ui",
-					"label": "#channel-test-ui"
-				},
-				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646"
-			},
-			{
-				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack...",
-				"uuid": "39a9cc32-0525-4f84-bb09-18242b3beedfservice8..",
-				"service_id": "slack",
-				"description": "Coordinate your project and collaborate with project members on Slack",
-				"url": "http://localhost:3900/slack-broker/api",
-				"tags": ["culture",
-				"deliver",
-				"productivity"],
-				"dashboard_url": "https://jauninb.slack.com/messages/channel-test-ui",
-				"parameters": {
-					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
-					"channel_name": "channel-test-ui-2",
-					"label": "#channel-test-ui-2"
-				},
-				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646"
-			}]
-		};
+	var events = [
+	    require("./event_otc_broker_1_provisionning"),
+	    require("./event_otc_broker_2_configuring"),
+	    require("./event_otc_broker_3_configured"),	    
+	    require("./event_otc_broker_4_unbind")	    
+	];
 	
-	// Simulate a Toolchain Lifecycle event
-    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(lifecycle_event)})
+	// TODO Add an unbind event
+	t.plan(events.length * 1);
+	
+	async.forEachOfSeries(events, function(event, index, callback) {
+	    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(event.payload)})
         .then(function(resultFromPost) {
-            t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event sending call succeed?');
-        });	
-	
-});
-
-test('Slack Broker - Test Toolchain Lifecycle Provision Event', function (t) {
-	t.plan(1);
-	
-	var lifecycle_event = {
-			"toolchain_guid": "36b128ee-c679-4d67-b1f0-cf8f2ce8b4dc",
-			"event": "provision",
-			"services": [{
-				"instance_id": "2858ead1-cb15-4916-91f3-5b3da4c5a5b6",
-				"parameters": {
-					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
-					"channel_name": "bjntest-19-bis",
-					"label": "#bjntest-19-bis"
-				},
-				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646",
-				"state": {
-					"status": "configured"
-				},
-				"dashboard_url": "https://jauninb.slack.com/messages/channel-bjntest-19",
-				"service_id": "slack",
-				"url": "https://otc-slack-broker.stage1.ng.bluemix.net/slack-broker/api",
-				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack",
-				"metadata": {
-					"parameters": {
-						"api_token": {
-							"title": "Slack API authentication token",
-							"description": "Type your API authentication token. You can find your token in the Web API section of the Slack API website.",
-							"type": "string",
-							"required": "true"
-						},
-						"channel_name": {
-							"title": "Slack channel",
-							"description": "Type the name of the Slack channel to post messages to. If you want messages to be posted to a new channel, type a new name. Slack will create the channel and invite you to it.",
-							"type": "string",
-							"required": "true"
-						}
-					}
-				},
-				"toolchain_binding": {
-					"status": "configured",
-					"webhook_id": "c4b9d4da39d5c8d7259086e76520b4b0"
-				}
-			}]
-		};
-	
-	// Simulate a Toolchain Lifecycle event
-    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(lifecycle_event)})
-        .then(function(resultFromPost) {
-            t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event sending call succeed?');
-        });	
-	
-});
-
-test('Slack Broker - Test Toolchain Lifecycle Unbind Event', function (t) {
-	t.plan(1);
-	
-	var lifecycle_event = {
-			"toolchain_guid": "c2c18129-cac8-4368-a27e-46b5bd75284c",
-			"event": "unbind",
-			"services": [{
-				"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfslack",
-				"uuid": "39a9cc32-0525-4f84-bb09-18242b3beedfservice8",
-				"service_id": "slack",
-				"description": "Coordinate your project and collaborate with project members on Slack",
-				"url": "http://localhost:3900/slack-broker/api",
-				"tags": ["culture",
-				"deliver",
-				"productivity"],
-				"dashboard_url": "https://jauninb.slack.com/messages/channel-test-ui",
-				"parameters": {
-					"api_token": "xoxp-13948444357-13953293954-13959136117-fb748ccba5",
-					"channel_name": "channel-test-ui",
-					"label": "#channel-test-ui"
-				},
-				"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646"
-			}]
-		};
-	
-	// Simulate a Toolchain Lifecycle event
-    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(lifecycle_event)})
-        .then(function(resultFromPost) {
-            t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event sending call succeed?');
-        });	
+            t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event ' + index + ' sending call succeed?');
+            callback();
+            // ensure the slack message has been posted
+        });			
+	}, function(err) {
+   		if (err) {
+   			t.fail(err);
+   		}
+	});
 	
 });
 
@@ -418,7 +349,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 
 	// Simulate a Pipeline event
-	// Empry Payload
+	// Empty Payload
 	var event = {};
     postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
     .then(function(resultFromPost) {
@@ -622,30 +553,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
     });
 });
 
-test('Slack Broker - Archive Test Slack Channel', function(t) {
-	// This is only to have a kind of cleanup
-	t.plan(2);
-    slack.api("channels.archive", {channel: slack_channel.id}, function(err, response) {
-    	if (err) {
-    		t.end(err);
-    	} else if (!response.ok) {
-    		t.fail(response.error);
-    	} else {
-        	t.ok(response.ok, 'did the slack channel get archived for deletion?');
-    	}
-    });                            
-    slack.api("channels.archive", {channel: slack_channel.id_bis}, function(err, response) {
-    	if (err) {
-    		t.end(err);
-    	} else if (!response.ok) {
-    		t.fail(response.error);
-    	} else {
-        	t.ok(response.ok, 'did the slack channel get archived for deletion?');
-    	}
-    });                            
-});
-
-// Monitoring endpoints
+//Monitoring endpoints
 test('Slack Broker - Test GET status', function (t) {
     t.plan(1);
 
@@ -670,6 +578,30 @@ test('Slack Broker - Test GET version', function (t) {
                 t.equal(results.statusCode, 200, 'did the get version call succeed?');
             }
     });
+});
+
+
+test('Slack Broker - Archive Test Slack Channel', function(t) {
+	// This is only to have a kind of cleanup
+	t.plan(2);
+    slack.api("channels.archive", {channel: slack_channel.id}, function(err, response) {
+    	if (err) {
+    		t.end(err);
+    	} else if (!response.ok) {
+    		t.fail(response.error);
+    	} else {
+        	t.ok(response.ok, 'did the slack channel get archived for deletion?');
+    	}
+    });                            
+    slack.api("channels.archive", {channel: slack_channel.id_bis}, function(err, response) {
+    	if (err) {
+    		t.end(err);
+    	} else if (!response.ok) {
+    		t.fail(response.error);
+    	} else {
+        	t.ok(response.ok, 'did the slack channel get archived for deletion?');
+    	}
+    });                            
 });
 
 
