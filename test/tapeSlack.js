@@ -281,23 +281,24 @@ test('Slack Broker - Test PATCH update instance with wrong api_key', function (t
 
 
 test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
-    t.plan(2);
+    t.plan(1);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId + '/toolchains/'+ mockToolchainId;
     putRequest(url, {header: header})
         .then(function(resultsFromBind) {
+        	// When there will be interest in lifecycle_webhook_url
+            //t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
+            //if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
+            //    t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid ?');
+            //    event_endpoints.toolchain_lifecycle_webhook_url = resultsFromBind.body.toolchain_lifecycle_webhook_url;
+            //} else {
+            //    t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
+            //}
             t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
-            //t.comment(JSON.stringify(resultsFromBind));
-            if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
-                t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid ?');
-                event_endpoints.toolchain_lifecycle_webhook_url = resultsFromBind.body.toolchain_lifecycle_webhook_url;
-            } else {
-                t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
-            }
     });
 });
 
-test('Slack Broker - Test Messaging Store Like Event', function (t) {
+test('Slack Broker - Test Pipeline Event arriving like Messaging Store', function (t) {
 	t.plan(2);
 	
 	// Message Store Event endpoint
@@ -334,8 +335,15 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	
 	t.plan(events.length * 2);
 	
+	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
+	
 	async.forEachOfSeries(events, function(event, index, callback) {
-	    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(event.payload)})
+		event.toolchain_id = mockToolchainId;
+		event.instance_id = mockServiceInstanceId;
+		// authorization will be removed from LMS message in near future
+		event.authorization = authenticationTokens[0];
+		//
+	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event ' + index + ' sending call succeed?');
             
