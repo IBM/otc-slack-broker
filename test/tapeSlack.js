@@ -342,7 +342,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
             // ensure the slack message has been posted
             getLastSlackMessage(function(err, result) {
             	if (err || !result) {
-            		t.comment(err);
+            		t.comment("err=" + err + ", result=" + result);
             		t.fail(err)
             	} else {
             		var expectedUsername = "Toolchain '" + event.payload.toolchain_guid +"'";
@@ -787,6 +787,7 @@ function getLastSlackMessage(callback) {
 				callback(null, null);
 			} else {
 				slackMessageLatestTimeRange = response.messages[0].ts;
+				console.log("slackMessageLatestTimeRange=" + slackMessageLatestTimeRange);
 				callback(null, response.messages[0]);
 			}
 		}
