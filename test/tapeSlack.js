@@ -342,14 +342,13 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
             // ensure the slack message has been posted
             getLastSlackMessage(function(err, result) {
             	if (err || !result) {
-            		t.comment("err=" + err + ", result=" + result);
             		t.fail(err)
             	} else {
             		var expectedUsername = "Toolchain '" + event.payload.toolchain_guid +"'";
             		t.equal(result.username, expectedUsername, 'did the slack message been created successfully for event ' + index + '?');
             	}
+                callback();
             });
-            callback();
         });			
 	}, function(err) {
    		if (err) {
