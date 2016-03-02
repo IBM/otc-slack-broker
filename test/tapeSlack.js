@@ -786,7 +786,7 @@ function getLastSlackMessage(callback) {
 				callback(null, null);
 			} else {
 				slackMessageLatestTimeRange = response.messages[0].ts;
-				console.log("slackMessageLatestTimeRange=" + slackMessageLatestTimeRange);
+				//console.log("slackMessageLatestTimeRange=" + slackMessageLatestTimeRange);
 				callback(null, response.messages[0]);
 			}
 		}
