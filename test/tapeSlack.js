@@ -1,6 +1,6 @@
 /**
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2015, 2015. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2015, 2016. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -298,7 +298,7 @@ test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
 });
 
 test('Slack Broker - Test Messaging Store Like Event', function (t) {
-	t.plan(1);
+	t.plan(2);
 	
 	// Message Store Event endpoint
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
@@ -311,9 +311,17 @@ test('Slack Broker - Test Messaging Store Like Event', function (t) {
     postRequest(messagingEndpoint, {header: header, body: JSON.stringify(message_store_pipeline_event)})
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the message store like event sending call succeed?');
-        });	
-	
+            // ensure the slack message has been posted
+            getLastSlackMessage(function(err, result) {
+            	if (err || !result) {
+            		t.fail(err)
+            	} else {
+            		t.equal(result.username, "Pipeline '" + message_store_pipeline_event.payload.pipeline.id +"'", 'did the slack message been created successfully?');
+            	}
+            });
+        });		
 });
+
 
 test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	
@@ -324,15 +332,23 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	    require("./event_otc_broker_4_unbind")	    
 	];
 	
-	// TODO Add an unbind event
-	t.plan(events.length * 1);
+	t.plan(events.length * 2);
 	
 	async.forEachOfSeries(events, function(event, index, callback) {
 	    postRequest(event_endpoints.toolchain_lifecycle_webhook_url, {header: header, body: JSON.stringify(event.payload)})
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event ' + index + ' sending call succeed?');
-            callback();
+            
             // ensure the slack message has been posted
+            getLastSlackMessage(function(err, result) {
+            	if (err || !result) {
+            		t.fail(err)
+            	} else {
+            		var expectedUsername = "Toolchain '" + event.payload.toolchain_guid +"'";
+            		t.equal(result.username, expectedUsername, 'did the slack message been created successfully for event ' + index + '?');
+            	}
+            });
+            callback();
         });			
 	}, function(err) {
    		if (err) {
@@ -343,38 +359,63 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 });
 
 test('Slack Broker - Test Bad Event payload', function (t) {
-	t.plan(3);
+	t.plan(5);
 	
 	// Message Store Event endpoint
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 
 	// Simulate a Pipeline event
-	// Empty Payload
 	var event = {};
-    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
-    .then(function(resultFromPost) {
-        t.equal(resultFromPost.statusCode, 400, 'did the bad event payload (1) sending call failed?');
-    });	
 	
-    // Minimal payload 2
-    event.service_id = "n/a";
-    event.toolchain_id = mockToolchainId;
-    event.instance_id = mockServiceInstanceId;
-    event.payload = {};
-    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
-    .then(function(resultFromPost) {
-        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (2) sending call succeed?');
-    });	
-
-    // Minimal payload 3
-    event.service_id = "pipeline";
-    event.payload.pipeline = {};
-    event.payload.pipeline.event="n/a";
-    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
-    .then(function(resultFromPost) {
-        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (3) sending call succeed?');
-    });	
-    
+	async.series([
+	     function(callback) {
+	    	// Empty Payload
+    	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    	    .then(function(resultFromPost) {
+    	        t.equal(resultFromPost.statusCode, 400, 'did the bad event payload (1) sending call failed?');
+    	        callback();
+    	    });	
+	     },
+	     function(callback) {
+    	    // Minimal payload 2
+    	    event.service_id = "n/a";
+    	    event.toolchain_id = mockToolchainId;
+    	    event.instance_id = mockServiceInstanceId;
+    	    event.payload = {};
+    	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    	    .then(function(resultFromPost) {
+    	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (2) sending call succeed?');
+    	        getLastSlackMessage(function(err, result) {
+    	        	if (err) {
+    	        		t.fail(err)
+    	        	} else {
+    	        		// No message should been received as Slack broker can not find any configuration out of the message
+    	        		t.equal(result, null, 'has no slack message been created for bad event payload (2) ?');
+    	        	}
+    	        	callback();
+    	        });
+    	    });	
+	     },
+	     function(callback) {
+    	    // Minimal payload 3
+    	    event.service_id = "pipeline";
+    	    event.payload.pipeline = {};
+    	    event.payload.pipeline.event="n/a";
+    	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    	    .then(function(resultFromPost) {
+    	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (3) sending call succeed?');
+    	        getLastSlackMessage(function(err, result) {
+    	        	if (err) {
+    	        		t.fail(err)
+    	        	} else {
+    	        		// Simple message should have been created
+    	        		t.equal(result.username, "Pipeline", 'has no slack message been created ?');
+    	        	}
+    	        	callback();
+    	        });
+    	    });	
+	     }
+	]);
 });
 
 
@@ -724,4 +765,26 @@ function postRequest(url, options) {
                 };
             }
         });
+}
+
+var slackMessageLatestTimeRange;
+function getLastSlackMessage(callback) {
+	var options = {channel: slack_channel.id};
+	if (slackMessageLatestTimeRange) {
+		options.oldest = slackMessageLatestTimeRange; 
+	}
+	slack.api("channels.history", options, function(err, response) {
+		if (err) {
+			callback(err);
+		} else if (!response.ok) {
+			callback(response.error);
+		} else {
+			if (_.isEmpty(response.messages)) {
+				callback(null, null);
+			} else {
+				slackMessageLatestTimeRange = response.messages[0].ts;
+				callback(null, response.messages[0]);
+			}
+		}
+	});	
 }
