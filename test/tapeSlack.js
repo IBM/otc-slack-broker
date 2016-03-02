@@ -342,6 +342,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
             // ensure the slack message has been posted
             getLastSlackMessage(function(err, result) {
             	if (err || !result) {
+            		t.comment(err);
             		t.fail(err)
             	} else {
             		var expectedUsername = "Toolchain '" + event.payload.toolchain_guid +"'";
@@ -352,6 +353,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
         });			
 	}, function(err) {
    		if (err) {
+    		t.comment(err);
    			t.fail(err);
    		}
 	});
@@ -387,6 +389,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (2) sending call succeed?');
     	        getLastSlackMessage(function(err, result) {
     	        	if (err) {
+                		t.comment(err);
     	        		t.fail(err)
     	        	} else {
     	        		// No message should been received as Slack broker can not find any configuration out of the message
@@ -406,6 +409,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (3) sending call succeed?');
     	        getLastSlackMessage(function(err, result) {
     	        	if (err) {
+                		t.comment(err);
     	        		t.fail(err)
     	        	} else {
     	        		// Simple message should have been created
