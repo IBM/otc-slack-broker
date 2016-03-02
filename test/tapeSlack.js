@@ -286,15 +286,15 @@ test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId + '/toolchains/'+ mockToolchainId;
     putRequest(url, {header: header})
         .then(function(resultsFromBind) {
-        	// When there will be interest in lifecycle_webhook_url
-            //t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
-            //if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
-            //    t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid ?');
-            //    event_endpoints.toolchain_lifecycle_webhook_url = resultsFromBind.body.toolchain_lifecycle_webhook_url;
-            //} else {
-            //    t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
-            //}
-            t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
+            t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
+            /*if (resultsFromBind.statusCode == 200) {
+                if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
+                    t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid for 200 status?');
+                    event_endpoints.toolchain_lifecycle_webhook_url = resultsFromBind.body.toolchain_lifecycle_webhook_url;
+                } else {
+                    t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
+                }
+        	}*/
     });
 });
 
@@ -554,7 +554,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain w/ other org', f
 
             putRequest(url + '/toolchains/'+ mockToolchainId, {header: header})
                 .then(function(resultsFromBind) {
-                    t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
+                    t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
 
                     delRequest(url + '/toolchains/'+ mockToolchainId, {header: auth})
                         .then(function(resultsFromDel) {
@@ -590,7 +590,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
 
             putRequest(url + '/toolchains/'+ mockToolchainId, {header: header})
                 .then(function(resultsFromBind) {
-                    t.equal(resultsFromBind.statusCode, 200, 'did the bind instance to toolchain call succeed?');
+                    t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
 
                     delRequest(url + '/toolchains/'+ mockToolchainId, {header: header})
                         .then(function(resultsFromDel) {
