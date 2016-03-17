@@ -7,12 +7,23 @@
  * Contract with IBM Corp.
  */
 "use strict";
+var
+ nconf = require("nconf"),
+ log4js = require("log4js")
+;
+
+//Configuration for nconf
+populateNconfSync();
+
+//require new relic before any middleware (especially express).
+if (nconf.get('ENABLE_NEW_RELIC')) {
+    require('newrelic');
+    logger.info('New Relic enabled');
+}
 
 var
  async = require("async"),
  express = require("express"),
- log4js = require("log4js"),
- nconf = require("nconf"),
  util = require("util"),
  nano = require("nano"),
  _ = require("underscore"),
@@ -41,14 +52,10 @@ var logger = log4js.getLogger("slack-broker"),
  	logBasePath = "index";
 
 async.auto({
-    configureNconf: function (callback) {
-    	populateNconfSync();
-        callback();
-    },
-    validateOptions: [ "configureNconf", function (callback) {
+    validateOptions: function (callback) {
     	validateConfSync();
         callback();
-    }],
+    },
     createDb: [ "validateOptions", function (callback) {
         createDb(callback);
     }],
