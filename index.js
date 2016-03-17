@@ -12,6 +12,14 @@ var
  log4js = require("log4js")
 ;
 
+//Configuration for logging
+log4js.configure("./config/log4js.json", {
+    reloadSecs: 30
+});
+
+var logger = log4js.getLogger("slack-broker"),
+ 	logBasePath = "index";
+
 //Configuration for nconf
 populateNconfSync();
 
@@ -42,14 +50,6 @@ var
 var swaggerUiMiddleware = require("swagger-ui-middleware"),
 otcSlackBrokerSwaggerSpecFile = path.join(__dirname, "/spec", "otc-slack-broker-swagger-spec.json"),
 otcSlackBrokerSwaggerSpec = require(otcSlackBrokerSwaggerSpecFile);
-
-// Configuration for logging
-log4js.configure("./config/log4js.json", {
-    reloadSecs: 30
-});
-
-var logger = log4js.getLogger("slack-broker"),
- 	logBasePath = "index";
 
 async.auto({
     validateOptions: function (callback) {
