@@ -6,7 +6,7 @@
 	"services": {
 		"slack-api": "https://slack.com/api",
 		"otc-api": "http://localhost:3400/api/v1",
-		"otc-ui": "http://localhost:3100/develop",
+		"otc-ui": "http://localhost:3100/devops",
 		"otc-webhook-manager" : "http://localhost:3250"
 	},
 	"_vcap_application": {

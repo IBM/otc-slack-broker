@@ -3,7 +3,7 @@
 	"services": {
 		"slack-api": "https://slack.com/api",
 		"otc-api": "https://otc-api.stage1.ng.bluemix.net/api/v1",
-		"otc-ui": "https://devops.stage1.ng.bluemix.net/develop",
+		"otc-ui": "https://devops.stage1.ng.bluemix.net/devops",
 		"otc-webhook-manager" : "https://otc-webhook-manager.stage1.ng.bluemix.net"	
 	}
 }
