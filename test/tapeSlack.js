@@ -102,6 +102,9 @@ test('Slack Broker - Test Authentication', function (t) {
         'Authorization': ''
     };
     
+    // Security Model since Public-beta
+    header.Authorization = "Basic " + new Buffer(nconf.get("TIAM_CLIENT_ID") + ":" + nconf.get("OTC_API_BROKER_SECRET")).toString('base64');
+    
     async.series([
         function(callback) {
             putRequest(url, {header: null, body: JSON.stringify(body)})
@@ -309,7 +312,10 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
 	message_store_pipeline_event.toolchain_id = mockToolchainId;
 	message_store_pipeline_event.instance_id = mockServiceInstanceId;
 	
-    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(message_store_pipeline_event)})
+	// Temp - Use Bearer for now until full security model adoption
+	var bearerHeader = {Authorization: authenticationTokens[0]};
+	
+    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(message_store_pipeline_event)})
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the message store like event sending call succeed?');
             // ensure the slack message has been posted
@@ -337,13 +343,15 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 	
+	var bearerHeader = {Authorization: authenticationTokens[0]};
+	
 	async.forEachOfSeries(events, function(event, index, callback) {
 		event.toolchain_id = mockToolchainId;
 		event.instance_id = mockServiceInstanceId;
 		// authorization will be removed from LMS message in near future
 		event.authorization = authenticationTokens[0];
 		//
-	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event ' + index + ' sending call succeed?');
             
@@ -376,10 +384,12 @@ test('Slack Broker - Test Bad Event payload', function (t) {
 	// Simulate a Pipeline event
 	var event = {};
 	
+	var bearerHeader = {Authorization: authenticationTokens[0]};
+	
 	async.series([
 	     function(callback) {
 	    	// Empty Payload
-    	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 400, 'did the bad event payload (1) sending call failed?');
     	        callback();
@@ -391,7 +401,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	    event.toolchain_id = mockToolchainId;
     	    event.instance_id = mockServiceInstanceId;
     	    event.payload = {};
-    	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (2) sending call succeed?');
     	        getLastSlackMessage(function(err, result) {
@@ -411,7 +421,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	    event.service_id = "pipeline";
     	    event.payload.pipeline = {};
     	    event.payload.pipeline.event="n/a";
-    	    postRequest(messagingEndpoint, {header: header, body: JSON.stringify(event)})
+    	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (3) sending call succeed?');
     	        getLastSlackMessage(function(err, result) {
@@ -479,13 +489,15 @@ test('Slack Broker - Test PUT update instance w/ an invalid org id', function (t
     var body = {
         'service_id': 'slack'
     };
+    
+	var bearerHeader = {Authorization: authenticationTokens[0]};
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
-    putRequest(url, {header: header, body: JSON.stringify(body)})
+    putRequest(url, {header: bearerHeader, body: JSON.stringify(body)})
         .then(function(resultFromPut) {
             t.equal(resultFromPut.statusCode, 400, 'did the put instance call fail with no organization_guid?');
             body.organization_guid = 'invalid';
-            putRequest(url, {header: header, body: JSON.stringify(body)})
+            putRequest(url, {header: bearerHeader, body: JSON.stringify(body)})
                 .then(function(resultFromUpdate) {
                    t.equal(resultFromUpdate.statusCode, 403, 'did the put instance call fail when the user is not part of the orginization?');
                 });

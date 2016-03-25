@@ -158,6 +158,8 @@ function configureAppSync(db) {
 	// Tack a handle to the Services Database to every request for use in the middleware.
 	.use(function (req, res, next) {
 		req.servicesDb = db;
+		// Temp for Step 3
+		req.tiamClient = tiamClient;
 		next();
 	})
 
@@ -186,6 +188,9 @@ function configureAppSync(db) {
 			return res.send(page);
 		});
 	})
+
+	// OTC lifecycle operations (i.e. provision, bind, unprovision, unbind)
+	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
 	
     // Try to fetch the user profile from the Authorization header.
 	.use(fetchAuthMiddleware(tiamClient))
@@ -193,8 +198,6 @@ function configureAppSync(db) {
 	// Endpoint for the lifecycle messaging store and toolchain api lifecycle events
 	.use("/slack-broker/api/v1/messaging", require("./lib/event/event"))
 
-	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
-	
 	//Handle errors
 	.use(function(error, req, res, next) {
 		if (error) {
