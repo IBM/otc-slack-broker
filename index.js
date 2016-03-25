@@ -158,8 +158,6 @@ function configureAppSync(db) {
 	// Tack a handle to the Services Database to every request for use in the middleware.
 	.use(function (req, res, next) {
 		req.servicesDb = db;
-		// Temp for Step 3
-		req.tiamClient = tiamClient;
 		next();
 	})
 

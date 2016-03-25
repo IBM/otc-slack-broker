@@ -484,52 +484,19 @@ test('Slack Broker - Test PUT update instance with channel_id (archived channel)
 
 
 test('Slack Broker - Test PUT update instance w/ an invalid org id', function (t) {
-    t.plan(2);
+    t.plan(1);
 
     var body = {
         'service_id': 'slack'
     };
     
-	var bearerHeader = {Authorization: authenticationTokens[0]};
-
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
-    putRequest(url, {header: bearerHeader, body: JSON.stringify(body)})
+    putRequest(url, {header: header, body: JSON.stringify(body)})
         .then(function(resultFromPut) {
             t.equal(resultFromPut.statusCode, 400, 'did the put instance call fail with no organization_guid?');
-            body.organization_guid = 'invalid';
-            putRequest(url, {header: bearerHeader, body: JSON.stringify(body)})
-                .then(function(resultFromUpdate) {
-                   t.equal(resultFromUpdate.statusCode, 403, 'did the put instance call fail when the user is not part of the orginization?');
-                });
     });
 });
 
-test('Slack Broker - Test PUT bind instance to toolchain w/ other org', function (t) {
-    t.plan(1);
-    var auth = {
-        'Authorization': authenticationTokens[1]
-    };
-
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId + '/toolchains/'+ mockToolchainId;
-    putRequest(url, {header: auth})
-        .then(function(resultsFromBind) {
-            t.equal(resultsFromBind.statusCode, 403, 'did the instance with other org fail to bind to toolchain?');
-    });
-});
-
-
-test('Slack Broker - Test DELETE instance w/ other org', function (t) {
-    t.plan(1);
-    var auth = {
-        'Authorization': authenticationTokens[1]
-    };
-
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
-    delRequest(url, {header: auth})
-        .then(function(resultsFromDel) {
-            t.equal(resultsFromDel.statusCode, 403, 'did the instance with other org fail to delete?');
-    });
-});
 
 test('Slack Broker - Test DELETE instance', function (t) {
     t.plan(1);
@@ -538,46 +505,6 @@ test('Slack Broker - Test DELETE instance', function (t) {
     delRequest(url, {header: header})
         .then(function(resultsFromDel) {
             t.equal(resultsFromDel.statusCode, 204, 'did the delete instance call succeed?');
-    });
-});
-
-
-// Unbind tests, the service instance will still remain in the DB
-test('Slack Broker - Test DELETE unbind instance from toolchain w/ other org', function (t) {
-    t.plan(5);
-
-    var body = {
-        'service_id': 'slack',
-        'organization_guid': organization_guid,
-        'parameters' : {
-        	api_token: nconf.get("slack-token"),
-        	channel_id: slack_channel.id        	
-        }
-    };
-    var auth = {
-        'Authorization': authenticationTokens[1]
-    };
-
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
-    putRequest(url, {header: header, body: JSON.stringify(body)})
-        .then(function(resultFromPut) {
-            t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
-            t.ok(resultFromPut.body.instance_id, 'did the put instance call return an instance_id?');
-
-            putRequest(url + '/toolchains/'+ mockToolchainId, {header: header})
-                .then(function(resultsFromBind) {
-                    t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
-
-                    delRequest(url + '/toolchains/'+ mockToolchainId, {header: auth})
-                        .then(function(resultsFromDel) {
-                            t.equal(resultsFromDel.statusCode, 403, 'did the unbind instance call with other org fail?');
-
-                            delRequest(url, {header: header})
-                                .then(function(resultsFromDel) {
-                                    t.equal(resultsFromDel.statusCode, 204, 'did the delete instance call succeed?');
-                            });
-                    });
-            });
     });
 });
 
