@@ -91,7 +91,7 @@ test('Slack Broker - Test Channel Name Validation', function (t) {
 
 // Authentication testing
 test('Slack Broker - Test Authentication', function (t) {
-    t.plan(5);
+    t.plan(4);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {
@@ -128,20 +128,12 @@ test('Slack Broker - Test Authentication', function (t) {
             });
         },
         function(callback) {
-            auth.Authorization = 'token';
+            auth.Authorization = 'basic';
             putRequest(url, {header: auth, body: JSON.stringify(body)})
             .then(function(resultNoBearer) {
-                t.equal(resultNoBearer.statusCode, 401, 'did the authentication request with no bearer in the Auth header fail?');
+                t.equal(resultNoBearer.statusCode, 401, 'did the authentication request with no basic creads in the Auth basic header fail?');
                 callback();
             });        	
-        },
-        function(callback) {
-            auth.Authorization = 'BEARER token';
-            putRequest(url, {header: auth, body: JSON.stringify(body)})
-            .then(function(resultInvalidToken) {
-                t.equal(resultInvalidToken.statusCode, 401, 'did the authentication request an invalid token in the Auth header fail?');
-                callback();
-            });
         }
 	], function(err, results) {
    		if (err) {
