@@ -145,7 +145,7 @@ test('Slack Broker - Test Authentication', function (t) {
 });
 
 test('Slack Broker - Test PUT instance', function (t) {
-    t.plan(5);
+    t.plan(6);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {};
@@ -160,6 +160,14 @@ test('Slack Broker - Test PUT instance', function (t) {
 	    },
 	    function(callback) {
             body.service_id = 'slack';
+            putRequest(url, {header: header, body: JSON.stringify(body)})
+            .then(function(resultNoOrg) {
+                t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
+                callback();
+            });	    	
+	    },
+	    function(callback) {
+            body.service_credentials = 'servicecreds';
             putRequest(url, {header: header, body: JSON.stringify(body)})
             .then(function(resultNoOrg) {
                 t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
@@ -276,21 +284,25 @@ test('Slack Broker - Test PATCH update instance with wrong api_key', function (t
 
 
 test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
-    t.plan(1);
+    t.plan(2);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId + '/toolchains/'+ mockToolchainId;
     putRequest(url, {header: header})
         .then(function(resultsFromBind) {
-            t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
-            /*if (resultsFromBind.statusCode == 200) {
-                if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
-                    t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid for 200 status?');
-                    event_endpoints.toolchain_lifecycle_webhook_url = resultsFromBind.body.toolchain_lifecycle_webhook_url;
-                } else {
-                    t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
-                }
-        	}*/
-    });
+            t.equal(resultsFromBind.statusCode, 400, 'did the bind instance w/o toolchain_credentials failed?');
+            putRequest(url, {header: header, body: JSON.stringify({toolchain_credentials: 'toolchainCreds'})})
+            	.then(function(resultsFromBind) {
+		            t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
+		            /*if (resultsFromBind.statusCode == 200) {
+		                if (_.isString(resultsFromBind.body.toolchain_lifecycle_webhook_url)) {
+		                    t.ok(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'did the toolchain_lifecycle_webhook_url value returned and valid for 200 status?');
+		                    event_endpoints.toolchain_lifecycle_webhook_url = resultsFromBind.body.toolchain_lifecycle_webhook_url;
+		                } else {
+		                    t.notOk(resultsFromBind.body.toolchain_lifecycle_webhook_url, 'is not a valid returned url for toolchain_lifecycle_webhook_url ?');            	
+		                }
+		        	}*/
+            	});
+        });
 });
 
 test('Slack Broker - Test Pipeline Event arriving like Messaging Store', function (t) {
@@ -446,6 +458,7 @@ test('Slack Broker - Test PUT update instance with channel_id (archived channel)
     		    var body = {
 		            'service_id': 'slack',
 		            'organization_guid': organization_guid,
+		            'service_credentials': "service_creds",
 		            'parameters' : {
 		            	api_token: nconf.get("slack-token"),
 		            	channel_id: slack_channel.id_bis        	
@@ -507,6 +520,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
     var body = {
         'service_id': 'slack',
         'organization_guid': organization_guid,
+        'service_credentials': 'service_creds',
         'parameters' : {
         	api_token: nconf.get("slack-token"),
         	channel_id: slack_channel.id        	
@@ -519,7 +533,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
             t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
             t.ok(resultFromPut.body.instance_id, 'did the put instance call return an instance_id?');
 
-            putRequest(url + '/toolchains/'+ mockToolchainId, {header: header})
+            putRequest(url + '/toolchains/'+ mockToolchainId, {header: header, body: JSON.stringify({toolchain_credentials: 'toolchainCreds'})})
                 .then(function(resultsFromBind) {
                     t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
 
