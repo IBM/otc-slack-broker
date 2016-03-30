@@ -282,6 +282,34 @@ test('Slack Broker - Test PATCH update instance with wrong api_key', function (t
 });
 
 
+test('Slack Broker - Test PATCH unknown instance', function (t) {
+    t.plan(1);
+	
+    var body = {
+        'service_id': 'slack',
+        'parameters' : {
+        	api_token: nconf.get("slack-token")
+        }
+    };
+
+    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/non_existent_id';
+    patchRequest(url, {header: header, body: JSON.stringify(body)})
+        .then(function(resultFromPatch) {
+        	//t.comment(JSON.stringify(resultFromPatch));
+            t.equal(resultFromPatch.statusCode, 404, 'did the patch for unknown instance failed ?');
+            //t.comment("resultFromPatch.body=" + JSON.stringify(resultFromPatch.body));
+    });    				
+});
+
+test('Slack Broker - Test PUT bind unknown instance to unknown toolchain', function (t) {
+    t.plan(1);
+
+    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/unknow_service/toolchains/unknow_toolchain';
+    putRequest(url, {header: header, body: JSON.stringify({toolchain_credentials: 'toolchainCreds'})})
+        .then(function(resultsFromBind) {
+            t.equal(resultsFromBind.statusCode, 404, 'did the bind of unknow instance and unknow toolchain failed?');
+        });
+});
 
 test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
     t.plan(2);
@@ -504,15 +532,31 @@ test('Slack Broker - Test PUT update instance w/ an invalid org id', function (t
 
 
 test('Slack Broker - Test DELETE instance', function (t) {
-    t.plan(1);
+    t.plan(2);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     delRequest(url, {header: header})
         .then(function(resultsFromDel) {
             t.equal(resultsFromDel.statusCode, 204, 'did the delete instance call succeed?');
     });
+    
+    url = nconf.get('url') + '/slack-broker/api/v1/service_instances/unknown_instance';
+    delRequest(url, {header: header})
+        .then(function(resultsFromDel) {
+            t.equal(resultsFromDel.statusCode, 404, 'did the delete for an unknown instance failed?');
+    });
+    
 });
 
+
+test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
+    t.plan(1);
+    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/unknow_service/toolchains/unknow_toolchain';
+    delRequest(url, {header: header})
+    	.then(function(resultsFromDel) {
+    		t.equal(resultsFromDel.statusCode, 404, 'did the unbind for unkown instance failed?');
+    	});
+});
 
 test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
     t.plan(5);
