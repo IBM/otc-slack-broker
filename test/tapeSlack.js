@@ -351,11 +351,14 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the message store like event sending call succeed?');
             // ensure the slack message has been posted
-            getLastSlackMessage(function(err, result) {
+            getLastSlackMessages(function(err, result) {
             	if (err || !result) {
             		t.fail(err)
             	} else {
-            		t.equal(result.username, "Pipeline '" + message_store_pipeline_event.payload.pipeline.id +"'", 'did the slack message been created successfully?');
+            		//t.comment(JSON.stringify(result));
+            		// inspect the Slack messages (set purpose, topic message can have been mixed with the pipeline ones here)
+            		var expectedUserName = "Pipeline '" + message_store_pipeline_event.payload.pipeline.id +"'";
+            		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully?');
             	}
             });
         });		
@@ -371,7 +374,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	    require("./event_otc_broker_4_unbind")	    
 	];
 	
-	t.plan(events.length * 2);
+	t.plan(events.length * 3);
 	
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 	
@@ -388,12 +391,13 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
             t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event ' + index + ' sending call succeed?');
             
             // ensure the slack message has been posted
-            getLastSlackMessage(function(err, result) {
+            getLastSlackMessages(function(err, result) {
             	if (err || !result) {
             		t.fail(err)
             	} else {
-            		var expectedUsername = "Toolchain '" + event.payload.toolchain_guid +"'";
-            		t.equal(result.username, expectedUsername, 'did the slack message been created successfully for event ' + index + '?');
+            		var expectedUserName = "Toolchain '" + event.payload.toolchain_guid +"'";
+            		t.equal(result.length, 1, "only a single Slack message here !");
+            		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully for event ' + index + '?');
             	}
                 callback();
             });
@@ -436,7 +440,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (2) sending call succeed?');
-    	        getLastSlackMessage(function(err, result) {
+    	        getLastSlackMessages(function(err, result) {
     	        	if (err) {
                 		t.comment(err);
     	        		t.fail(err)
@@ -456,13 +460,13 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (3) sending call succeed?');
-    	        getLastSlackMessage(function(err, result) {
+    	        getLastSlackMessages(function(err, result) {
     	        	if (err) {
                 		t.comment(err);
     	        		t.fail(err)
     	        	} else {
     	        		// Simple message should have been created
-    	        		t.equal(result.username, "Pipeline", 'has no slack message been created ?');
+    	        		t.notEqual(_.findWhere(result, {username: "Pipeline"}), undefined, 'did a generic slack message been created ?');
     	        	}
     	        	callback();
     	        });
@@ -768,24 +772,29 @@ function postRequest(url, options) {
 }
 
 var slackMessageLatestTimeRange;
-function getLastSlackMessage(callback) {
+function getLastSlackMessages(callback) {
 	var options = {channel: slack_channel.id};
 	if (slackMessageLatestTimeRange) {
 		options.oldest = slackMessageLatestTimeRange; 
 	}
-	slack.api("channels.history", options, function(err, response) {
-		if (err) {
-			callback(err);
-		} else if (!response.ok) {
-			callback(response.error);
-		} else {
-			if (_.isEmpty(response.messages)) {
-				callback(null, null);
+	setTimeout(function() {
+		// Let Slack a chance to be updated
+		slack.api("channels.history", options, function(err, response) {
+			if (err) {
+				callback(err);
+			} else if (!response.ok) {
+				callback(response.error);
 			} else {
-				slackMessageLatestTimeRange = response.messages[0].ts;
-				//console.log("slackMessageLatestTimeRange=" + slackMessageLatestTimeRange);
-				callback(null, response.messages[0]);
+				if (_.isEmpty(response.messages)) {
+					callback(null, null);
+				} else {
+					// Messages came from younger to older
+					slackMessageLatestTimeRange = response.messages[0].ts;
+					console.log("slackMessageLatestTimeRange:" + slackMessageLatestTimeRange);
+					//console.log("slackMessageLatestTimeRange=" + slackMessageLatestTimeRange);
+					callback(null, response.messages);
+				}
 			}
-		}
-	});	
+		});	
+	}, 2000);
 }
