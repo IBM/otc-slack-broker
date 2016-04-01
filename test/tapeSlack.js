@@ -144,6 +144,19 @@ test('Slack Broker - Test Authentication', function (t) {
 	});
 });
 
+/*
+test("Slack Broker - Test TIAM Creds", function(t) {
+	t.plan(2);
+	var creds = new Buffer(nconf.get("TIAM_CLIENT_ID") + ":" + nconf.get("OTC_API_BROKER_SECRET")).toString('base64');
+	var url = nconf.get("TIAM_URL") + '/service/manage/introspect?credentials=' + creds;
+	t.comment(url);
+    getRequest(url, {header: header})
+	    .then(function(result) {
+	    	t.comment(JSON.stringify(result));
+	    });        		
+});
+*/
+
 test('Slack Broker - Test PUT instance', function (t) {
     t.plan(6);
 

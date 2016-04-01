@@ -1,6 +1,6 @@
 /**
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2015, 2015. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2015, 2016. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -37,11 +37,8 @@ var
  _ = require("underscore"),
  nanoDocUpdater = require("nano-doc-updater"),
  bodyParser = require("body-parser"),
- fetchAuthMiddleware = require("./lib/middleware/fetch-auth"),
+ fetchAuth = require("./lib/middleware/fetch-auth"),
  HttpsAgent = require("agentkeepalive").HttpsAgent,
- 
- TIAMClient = require("node-tiam-client"),
-
  path = require("path"),
  url = require("url")
 ;
@@ -123,8 +120,6 @@ function configureAppSync(db) {
 	var logPrefix = "[" + logBasePath + ".configureAppSync] ";
 	var app = express();
 
-	var tiamClient = new TIAMClient(nconf.get("TIAM_URL"), nconf.get("TIAM_CLIENT_ID"), nconf.get("TIAM_CLIENT_SECRET"));
-	
 	app
 	// If a request comes in that appears to be http, reject it.
 	.use(function (req, res, next) {
@@ -190,8 +185,8 @@ function configureAppSync(db) {
 	// OTC lifecycle operations (i.e. provision, bind, unprovision, unbind)
 	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
 	
-    // Try to fetch the user profile from the Authorization header.
-	.use(fetchAuthMiddleware(tiamClient))
+    // Fetch the Auth information from the Authorization header.
+	.use(fetchAuth.fetch)
 	
 	// Endpoint for the lifecycle messaging store and toolchain api lifecycle events
 	.use("/slack-broker/api/v1/messaging", require("./lib/event/event"))
