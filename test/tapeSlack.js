@@ -42,6 +42,8 @@ var defaultHeaders = {
 var mockServiceInstanceId = "tape" + new Date().getTime();
 var mockToolchainId = "06178d7e-cf36-4a80-ad82-8c9f428f3ea9";
 
+var tiamCredentials = {};
+
 var header = {};
 var organization_guid = null;
 var authenticationTokens = [];
@@ -144,18 +146,37 @@ test('Slack Broker - Test Authentication', function (t) {
 	});
 });
 
-/*
-test("Slack Broker - Test TIAM Creds", function(t) {
-	t.plan(2);
-	var creds = new Buffer(nconf.get("TIAM_CLIENT_ID") + ":" + nconf.get("OTC_API_BROKER_SECRET")).toString('base64');
-	var url = nconf.get("TIAM_URL") + '/service/manage/introspect?credentials=' + creds;
-	t.comment(url);
-    getRequest(url, {header: header})
+
+test("Slack Broker - Create Test TIAM Creds", function(t) {
+	t.plan(3);
+	var tiamHeader = {};
+	tiamHeader.Authorization = "Basic " + new Buffer(nconf.get("test-tiam-id") + ":" + nconf.get("test-tiam-secret")).toString('base64');
+	// Create a service credentials
+	var url = nconf.get("TIAM_URL") + '/service/manage/slack/' + mockServiceInstanceId;
+	//t.comment(url);
+    postRequest(url, {header: tiamHeader})
 	    .then(function(result) {
-	    	t.comment(JSON.stringify(result));
+	    	t.notEqual(result.body.service_credentials, undefined, "service credentials created ?");
+	    	tiamCredentials.service_credentials = result.body.service_credentials;
 	    });        		
+    
+    // Create a toolchain credentials
+    url = url + "/" + mockToolchainId;
+    postRequest(url, {header: tiamHeader})
+    .then(function(result) {
+    	t.notEqual(result.body.toolchain_credentials, undefined, "toolchain credentials created ?");
+    	tiamCredentials.toolchain_credentials = result.body.toolchain_credentials;
+    });        		
+    
+    // Create an target_credentials credentials to access the slack serviceid and toolchain
+    url = nconf.get("TIAM_URL") + '/service/manage/credentials?target=' + mockServiceInstanceId + '&toolchain=' + mockToolchainId;
+    postRequest(url, {header: tiamHeader})
+    .then(function(result) {
+    	t.notEqual(result.body.target_credentials, undefined, "target_credentials created ?");
+    	tiamCredentials.target_credentials = result.body.target_credentials;
+    });        		
+    
 });
-*/
 
 test('Slack Broker - Test PUT instance', function (t) {
     t.plan(6);
@@ -180,7 +201,7 @@ test('Slack Broker - Test PUT instance', function (t) {
             });	    	
 	    },
 	    function(callback) {
-            body.service_credentials = 'servicecreds';
+            body.service_credentials = tiamCredentials.service_credentials;
             putRequest(url, {header: header, body: JSON.stringify(body)})
             .then(function(resultNoOrg) {
                 t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
@@ -318,7 +339,7 @@ test('Slack Broker - Test PUT bind unknown instance to unknown toolchain', funct
     t.plan(1);
 
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/unknow_service/toolchains/unknow_toolchain';
-    putRequest(url, {header: header, body: JSON.stringify({toolchain_credentials: 'toolchainCreds'})})
+    putRequest(url, {header: header, body: JSON.stringify({toolchain_credentials: tiamCredentials.toolchain_credentials})})
         .then(function(resultsFromBind) {
             t.equal(resultsFromBind.statusCode, 404, 'did the bind of unknow instance and unknow toolchain failed?');
         });
@@ -331,7 +352,7 @@ test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
     putRequest(url, {header: header})
         .then(function(resultsFromBind) {
             t.equal(resultsFromBind.statusCode, 400, 'did the bind instance w/o toolchain_credentials failed?');
-            putRequest(url, {header: header, body: JSON.stringify({toolchain_credentials: 'toolchainCreds'})})
+            putRequest(url, {header: header, body: JSON.stringify({toolchain_credentials: tiamCredentials.toolchain_credentials})})
             	.then(function(resultsFromBind) {
 		            t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
 		            /*if (resultsFromBind.statusCode == 200) {
@@ -347,7 +368,7 @@ test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
 });
 
 test('Slack Broker - Test Pipeline Event arriving like Messaging Store', function (t) {
-	t.plan(2);
+	t.plan(2 * 2);
 	
 	// Message Store Event endpoint
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
@@ -359,10 +380,13 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
 	
 	// Temp - Use Bearer for now until full security model adoption
 	var bearerHeader = {Authorization: authenticationTokens[0]};
+	var basicHeader = {Authorization: "Basic " + tiamCredentials.target_credentials};
 	
-    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(message_store_pipeline_event)})
+	async.eachSeries([{type: "bearer", value: bearerHeader}, {type: "basic", value: basicHeader}], function(value, callback) {
+		
+	    postRequest(messagingEndpoint, {header: value.value, body: JSON.stringify(message_store_pipeline_event)})
         .then(function(resultFromPost) {
-            t.equal(resultFromPost.statusCode, 204, 'did the message store like event sending call succeed?');
+            t.equal(resultFromPost.statusCode, 204, 'did the message store like event sending call succeed (' + value.type + ') ?');
             // ensure the slack message has been posted
             getLastSlackMessages(function(err, result) {
             	if (err || !result) {
@@ -371,10 +395,14 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
             		//t.comment(JSON.stringify(result));
             		// inspect the Slack messages (set purpose, topic message can have been mixed with the pipeline ones here)
             		var expectedUserName = "Pipeline '" + message_store_pipeline_event.payload.pipeline.id +"'";
-            		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully?');
+            		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully(' + value.type + ')?');
             	}
+            	callback();
             });
-        });		
+        });
+	    
+	});
+	
 });
 
 
@@ -391,7 +419,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 	
-	var bearerHeader = {Authorization: authenticationTokens[0]};
+	var basicHeader = {Authorization: "Basic " + tiamCredentials.target_credentials};
 	
 	async.forEachOfSeries(events, function(event, index, callback) {
 		event.toolchain_id = mockToolchainId;
@@ -399,7 +427,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 		// authorization will be removed from LMS message in near future
 		event.authorization = authenticationTokens[0];
 		//
-	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
+	    postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(event)})
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event ' + index + ' sending call succeed?');
             
@@ -433,12 +461,12 @@ test('Slack Broker - Test Bad Event payload', function (t) {
 	// Simulate a Pipeline event
 	var event = {};
 	
-	var bearerHeader = {Authorization: authenticationTokens[0]};
+	var basicHeader = {Authorization: "Basic " + tiamCredentials.target_credentials};
 	
 	async.series([
 	     function(callback) {
 	    	// Empty Payload
-    	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
+    	    postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 400, 'did the bad event payload (1) sending call failed?');
     	        callback();
@@ -450,7 +478,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	    event.toolchain_id = mockToolchainId;
     	    event.instance_id = mockServiceInstanceId;
     	    event.payload = {};
-    	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
+    	    postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (2) sending call succeed?');
     	        getLastSlackMessages(function(err, result) {
@@ -470,7 +498,7 @@ test('Slack Broker - Test Bad Event payload', function (t) {
     	    event.service_id = "pipeline";
     	    event.payload.pipeline = {};
     	    event.payload.pipeline.event="n/a";
-    	    postRequest(messagingEndpoint, {header: bearerHeader, body: JSON.stringify(event)})
+    	    postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(event)})
     	    .then(function(resultFromPost) {
     	        t.equal(resultFromPost.statusCode, 204, 'did the bad event payload (3) sending call succeed?');
     	        getLastSlackMessages(function(err, result) {
@@ -503,7 +531,7 @@ test('Slack Broker - Test PUT update instance with channel_id (archived channel)
     		    var body = {
 		            'service_id': 'slack',
 		            'organization_guid': organization_guid,
-		            'service_credentials': "service_creds",
+		            'service_credentials': tiamCredentials.service_credentials,
 		            'parameters' : {
 		            	api_token: nconf.get("slack-token"),
 		            	channel_id: slack_channel.id_bis        	
@@ -581,7 +609,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
     var body = {
         'service_id': 'slack',
         'organization_guid': organization_guid,
-        'service_credentials': 'service_creds',
+        'service_credentials': tiamCredentials.service_credentials,
         'parameters' : {
         	api_token: nconf.get("slack-token"),
         	channel_id: slack_channel.id        	
@@ -594,7 +622,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
             t.equal(resultFromPut.statusCode, 200, 'did the put instance call succeed?');
             t.ok(resultFromPut.body.instance_id, 'did the put instance call return an instance_id?');
 
-            putRequest(url + '/toolchains/'+ mockToolchainId, {header: header, body: JSON.stringify({toolchain_credentials: 'toolchainCreds'})})
+            putRequest(url + '/toolchains/'+ mockToolchainId, {header: header, body: JSON.stringify({toolchain_credentials: tiamCredentials.toolchain_credentials})})
                 .then(function(resultsFromBind) {
                     t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
 
@@ -610,6 +638,30 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
             });
     });
 });
+
+test("Slack Broker - Delete Test TIAM Creds", function(t) {
+	t.plan(2);
+	var tiamHeader = {};
+	tiamHeader.Authorization = "Basic " + new Buffer(nconf.get("test-tiam-id") + ":" + nconf.get("test-tiam-secret")).toString('base64');
+	
+    // Delete a toolchain credentials
+    var url = nconf.get("TIAM_URL") + '/service/manage/slack/' + mockServiceInstanceId + "/" + mockToolchainId;
+    delRequest(url, {header: tiamHeader})
+    .then(function(result) {
+    	t.equal(result.statusCode, 204, "toolchain credentials deleted ?");
+    	tiamCredentials.toolchain_credentials = null;
+    });        		
+	// Delete a service credentials
+	url = nconf.get("TIAM_URL") + '/service/manage/slack/' + mockServiceInstanceId;
+    delRequest(url, {header: tiamHeader})
+	    .then(function(result) {
+	    	t.equal(result.statusCode, 204, "service credentials deleted ?");
+	    	tiamCredentials.service_credentials = null;
+	    });        		
+    
+    
+});
+
 
 //Monitoring endpoints
 test('Slack Broker - Test GET status', function (t) {
@@ -803,8 +855,7 @@ function getLastSlackMessages(callback) {
 				} else {
 					// Messages came from younger to older
 					slackMessageLatestTimeRange = response.messages[0].ts;
-					console.log("slackMessageLatestTimeRange:" + slackMessageLatestTimeRange);
-					//console.log("slackMessageLatestTimeRange=" + slackMessageLatestTimeRange);
+					//console.log("slackMessageLatestTimeRange:" + slackMessageLatestTimeRange);
 					callback(null, response.messages);
 				}
 			}
