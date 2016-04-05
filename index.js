@@ -31,16 +31,17 @@ if (nconf.get('ENABLE_NEW_RELIC')) {
 
 var
  async = require("async"),
+ bodyParser = require("body-parser"),
  express = require("express"),
+ fetchAuth = require("./lib/middleware/fetch-auth"),
+ https = require('https'),
+ HttpsAgent = require("agentkeepalive").HttpsAgent,
  util = require("util"),
  nano = require("nano"),
- _ = require("underscore"),
  nanoDocUpdater = require("nano-doc-updater"),
- bodyParser = require("body-parser"),
- fetchAuth = require("./lib/middleware/fetch-auth"),
- HttpsAgent = require("agentkeepalive").HttpsAgent,
  path = require("path"),
- url = require("url")
+ url = require("url"),
+ _ = require("underscore")
 ;
 
 // Swgager (temporary until within pipeline stage/job)
@@ -118,8 +119,12 @@ function validateConfSync() {
 
 function configureAppSync(db) {
 	var logPrefix = "[" + logBasePath + ".configureAppSync] ";
+	
 	var app = express();
-
+	
+	// enable connection pooling
+	https.globalAgent.keepAlive = true;
+	
 	app
 	// If a request comes in that appears to be http, reject it.
 	.use(function (req, res, next) {
