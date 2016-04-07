@@ -14,5 +14,3 @@ applications:
   domain: stage1.ng.bluemix.net
   path: .
   command: node index
-  services:
-  - otc-slack-db
