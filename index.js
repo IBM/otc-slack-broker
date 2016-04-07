@@ -164,7 +164,8 @@ function configureAppSync(db) {
 	// Temporary in order to have message coming from webhookmanager pipeline
 	//.use("/slack-broker/unsecured/event/v1/", require("./lib/event/event"))
 
-	.get("/slack-broker", function (req, res/*, next*/) {
+	/*
+	.get("/slack-broker", function (req, res) {
 		db.view("slack", "service_instances", function (err, r) {
 			var page = "" +
 			"<!-- DOCTYPE: html -->\n" +
@@ -186,6 +187,7 @@ function configureAppSync(db) {
 			return res.send(page);
 		});
 	})
+	*/
 
 	// OTC lifecycle operations (i.e. provision, bind, unprovision, unbind)
 	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
