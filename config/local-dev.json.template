@@ -4,11 +4,17 @@
 	"url": "http://localhost:3900",
 	"schemes": "http",
 	"services": {
-		"slack-api": "https://slack.com/api",
-		"otc-api": "http://localhost:3400/api/v1",
-		"otc-ui": "http://localhost:3100/devops",
-		"otc-webhook-manager" : "http://localhost:3250"
+		"slack_api": "https://slack.com/api",
+		"otc_api": "http://localhost:3400/api/v1",
+		"otc_ui": "http://localhost:3100/devops",
+		"otc_webhook-manager" : "http://localhost:3250"
 	},
+    "icons": {
+        "github": "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png",
+        "toolchain": "http://blade-resources.mybluemix.net/toolchain-32.png",
+        "pipeline": "http://blade-resources.mybluemix.net/pipeline.png",
+        "bluemix": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png"
+    },
 	"_vcap_application": {
 		"application_uris":["localhost:3900"]
 	},
