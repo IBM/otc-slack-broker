@@ -21,7 +21,14 @@
 				"label": "#channel-test-ui"
 			},
 			"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646"
-		}]
+		}],
+        "user_info": {
+             "user_id": "065843c2-61c9-438a-9ec2-1de474cd8b6d",
+             "user_name": "curtispd@ca.ibm.com",
+             "email": "curtispd@ca.ibm.com",
+             "name": "Curtis d'Entremont",
+             "tiam_id_token": "***"
+        }
 	},
 	"authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1MWJhNjM2Ny0yZmYwLTQ0NjAtYjRlZS0yODFmZmI2NTc0NTEiLCJzdWIiOiJmYTBjNjViMi0wZjM3LTRjNmYtOGMzOC0wYzY0NTA5YTIxYWQiLCJzY29wZSI6WyJjbG91ZF9jb250cm9sbGVyLnJlYWQiLCJjbG91ZF9jb250cm9sbGVyLndyaXRlIiwib3BlbmlkIl0sImNsaWVudF9pZCI6Im90Y2NsaWVudCIsImNpZCI6Im90Y2NsaWVudCIsImF6cCI6Im90Y2NsaWVudCIsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJ1c2VyX2lkIjoiZmEwYzY1YjItMGYzNy00YzZmLThjMzgtMGM2NDUwOWEyMWFkIiwib3JpZ2luIjoidWFhIiwidXNlcl9uYW1lIjoiamF1bmluLmJAZnIuaWJtLmNvbSIsImVtYWlsIjoiamF1bmluLmJAZnIuaWJtLmNvbSIsImF1dGhfdGltZSI6MTQ1NTAwNTM3OSwicmV2X3NpZyI6ImNkMjAwNWE2IiwiaWF0IjoxNDU1MDA1Mzc5LCJleHAiOjE0NTUwNDg1NzksImlzcyI6Imh0dHBzOi8vdWFhLnN0YWdlMS5uZy5ibHVlbWl4Lm5ldC9vYXV0aC90b2tlbiIsInppZCI6InVhYSIsImF1ZCI6WyJjbG91ZF9jb250cm9sbGVyIiwib3BlbmlkIiwib3RjY2xpZW50Il19.xNpiYzqgT9SoD6bfycYQm2J2_3I8R4WPvOAkeyWYfd4"
 }
