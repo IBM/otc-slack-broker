@@ -51,8 +51,8 @@ var mockUserArray = [];
 
 var slack_channel = {};
 var now = new Date();
-slack_channel.name = "tape_bot" + (now.getFullYear() - 2000) + "" + now.getMonth() + "" + now.getDate() + "-";
-slack_channel.name += now.getHours() + "" + now.getMinutes() + "" + now.getSeconds();
+slack_channel.name = "tape_bot" + (now.getFullYear() - 2000) + pad(now.getMonth()) + pad(now.getDate()) + "-";
+slack_channel.name += pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
 //slack_channel.topic = "Slack Channel for Tape Test of OTC-Slack-Broker";
 
 var event_endpoints = {};
@@ -861,4 +861,8 @@ function getLastSlackMessages(callback) {
 			}
 		});	
 	}, 2000);
+}
+
+function pad(n) {
+    return (n < 10) ? ("0" + n) : ("" + n);
 }
