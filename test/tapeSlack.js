@@ -277,7 +277,7 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     patchRequest(url, {header: header, body: JSON.stringify(body)})
         .then(function(resultFromPatch) {
-        	t.comment(JSON.stringify(resultFromPatch));
+        	//t.comment(JSON.stringify(resultFromPatch));
             t.equal(resultFromPatch.statusCode, 200, 'did the patch instance call succeed?');
             //t.comment(JSON.stringify(slack_channel));
             t.notEqual(resultFromPatch.body.instance_id, slack_channel.id, 'did the put instance call return the appropriate channel id?');
