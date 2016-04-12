@@ -129,7 +129,7 @@ function configureAppSync(db) {
 	// If a request comes in that appears to be http, reject it.
 	.use(function (req, res, next) {
 	  if (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] !== 'https') {
-	    return res.status(501).send('https required');
+	    return res.status(403).send('https required');
 	  }
 	  next();
 	})
