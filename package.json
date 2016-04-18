@@ -15,7 +15,7 @@
     "nano-doc-updater": "git+https://github.ibm.com/org-ids/node-nano-doc-updater#v0.0.1",
     "nconf": "0.8.2",
     "newrelic": "^1.25.1",
-    "node-log4js-syslog-appender": "git+https://github.ibm.com/org-ids/node-log4js-syslog-appender#v0.1.4",
+    "node-log4js-syslog-appender": "git+https://github.ibm.com/org-ids/node-log4js-syslog-appender#v0.1.5",
     "node-tiam-client": "git+https://github.ibm.com/org-ids/node-tiam-client",
     "request": "2.67.0",
     "slack-node": "^0.1.3",
