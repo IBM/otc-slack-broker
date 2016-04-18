@@ -85,21 +85,21 @@ test('Slack Broker - Test Authentication', function (t) {
         function(callback) {
             putRequest(url, {header: null, body: JSON.stringify(body)})
             .then(function(resultNoHeader) {
-                t.equal(resultNoHeader.statusCode, 401, 'did the authentication request with no Auth header fail?');
+                t.equal(resultNoHeader.statusCode, 401, 'did the authentication request with no Auth header failed?');
                 callback();
             });
         },
         function(callback) {
-            putRequest(url, {header: null, body: JSON.stringify(body)})
+            putRequest(url, {header: {"Authorization": "Bearer something"}, body: JSON.stringify(body)})
             .then(function(resultNoHeader) {
-                t.equal(resultNoHeader.statusCode, 401, 'did the authentication request with no Auth header fail?');
+                t.equal(resultNoHeader.statusCode, 401, 'did the authentication request with a Bearer token header failed?');
                 callback();
             });        	
         },
         function(callback) {
             putRequest(url, {header: auth, body: JSON.stringify(body)})
             .then(function(resultNoToken) {
-                t.equal(resultNoToken.statusCode, 401, 'did the authentication request with an empty Auth header fail?');
+                t.equal(resultNoToken.statusCode, 401, 'did the authentication request with an empty Auth header failed?');
                 callback();
             });
         },
@@ -107,7 +107,7 @@ test('Slack Broker - Test Authentication', function (t) {
             auth.Authorization = 'basic';
             putRequest(url, {header: auth, body: JSON.stringify(body)})
             .then(function(resultNoBearer) {
-                t.equal(resultNoBearer.statusCode, 401, 'did the authentication request with no basic creads in the Auth basic header fail?');
+                t.equal(resultNoBearer.statusCode, 401, 'did the authentication request with no basic creads in the Auth basic header failed?');
                 callback();
             });        	
         }
