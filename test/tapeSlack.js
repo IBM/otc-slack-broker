@@ -241,6 +241,9 @@ test('Slack Broker - Test PUT update instance w/o parameters', function (t) {
 
 test('Slack Broker - Test PATCH update instance with channel_name', function (t) {
     t.plan(3);
+    
+    // Sleep 3s to not overload Slack - Workaround but may lead to trouble in prod ?
+    sleep(3);
 	
     var body = {
         'service_id': 'slack',
@@ -831,3 +834,10 @@ function getLastSlackMessages(callback) {
 function pad(n) {
     return (n < 10) ? ("0" + n) : ("" + n);
 }
+
+function sleep(s) {
+    var e = new Date().getTime() + (s * 1000);
+    while (new Date().getTime() <= e) {
+      ;
+    }
+  }
