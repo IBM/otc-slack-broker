@@ -45,9 +45,7 @@ var mockToolchainId = "06178d7e-cf36-4a80-ad82-8c9f428f3ea9";
 var tiamCredentials = {};
 
 var header = {};
-var organization_guid = null;
-var authenticationTokens = [];
-var mockUserArray = [];
+var organization_guid = "some uuid";
 
 var slack_channel = {};
 var now = new Date();
@@ -57,29 +55,7 @@ slack_channel.name += pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getS
 
 var event_endpoints = {};
 
-var mockUserArray = nconf.get('userArray');
-
 var slack = new Slack(nconf.get("slack-token"));
-
-test('Slack Broker - Test Setup', function (t) {
-
-    t.plan(mockUserArray.length * 2);
-
-    for(var i = 0; i < mockUserArray.length; i++) (function(i) {
-        tiamUtils.authenticateTestUserWithTIAM (function(accessToken) {
-            tiamUtils.getProfile (accessToken, function(err, profile) {
-                t.equal(err, null, 'Was authenticate test user with TIAM successful?');
-                authenticationTokens[i] = accessToken;
-                if(typeof authenticationTokens[0] !== 'undefined' && i === 0) {
-                    header.Authorization = authenticationTokens[0];
-                    organization_guid = mockUserArray[i].organization_guid;
-                }
-                t.pass('Authentication succeeded for mock user: ' + mockUserArray[i].testusername);
-            });
-        }, i);
-    } (i));
-});
-
 
 test('Slack Broker - Test Channel Name Validation', function (t) {
 	t.plan(6);
@@ -368,7 +344,7 @@ test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
 });
 
 test('Slack Broker - Test Pipeline Event arriving like Messaging Store', function (t) {
-	t.plan(2 * 2);
+	t.plan(2);
 	
 	// Message Store Event endpoint
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
@@ -378,31 +354,22 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
 	message_store_pipeline_event.toolchain_id = mockToolchainId;
 	message_store_pipeline_event.instance_id = mockServiceInstanceId;
 	
-	// Temp - Use Bearer for now until full security model adoption
-	var bearerHeader = {Authorization: authenticationTokens[0]};
 	var basicHeader = {Authorization: "Basic " + tiamCredentials.target_credentials};
-	
-	async.eachSeries([{type: "bearer", value: bearerHeader}, {type: "basic", value: basicHeader}], function(value, callback) {
-		
-	    postRequest(messagingEndpoint, {header: value.value, body: JSON.stringify(message_store_pipeline_event)})
-        .then(function(resultFromPost) {
-            t.equal(resultFromPost.statusCode, 204, 'did the message store like event sending call succeed (' + value.type + ') ?');
-            // ensure the slack message has been posted
-            getLastSlackMessages(function(err, result) {
-            	if (err || !result) {
-            		t.fail(err)
-            	} else {
-            		//t.comment(JSON.stringify(result));
-            		// inspect the Slack messages (set purpose, topic message can have been mixed with the pipeline ones here)
-            		var expectedUserName = "Pipeline '" + message_store_pipeline_event.payload.pipeline.id +"'";
-            		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully(' + value.type + ')?');
-            	}
-            	callback();
-            });
+    postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(message_store_pipeline_event)})
+    .then(function(resultFromPost) {
+        t.equal(resultFromPost.statusCode, 204, 'did the message store like event sending call succeed ?');
+        // ensure the slack message has been posted
+        getLastSlackMessages(function(err, result) {
+        	if (err || !result) {
+        		t.fail(err)
+        	} else {
+        		//t.comment(JSON.stringify(result));
+        		// inspect the Slack messages (set purpose, topic message can have been mixed with the pipeline ones here)
+        		var expectedUserName = "Pipeline '" + message_store_pipeline_event.payload.pipeline.id +"'";
+        		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'has the slack message been created successfully ?');
+        	}
         });
-	    
-	});
-	
+    });
 });
 
 
@@ -424,10 +391,8 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	async.forEachOfSeries(events, function(event, index, callback) {
 		event.toolchain_id = mockToolchainId;
 		event.instance_id = mockServiceInstanceId;
-		// authorization will be removed from LMS message in near future
-		event.authorization = authenticationTokens[0];
-		//
-	    postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(event)})
+
+		postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(event)})
         .then(function(resultFromPost) {
             t.equal(resultFromPost.statusCode, 204, 'did the toolchain lifecycle event ' + index + ' sending call succeed?');
             
