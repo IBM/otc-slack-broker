@@ -15,8 +15,8 @@
     "uaa": {
         "fetchTokenURL": "https://login.stage1.ng.bluemix.net/UAALoginServerWAR/oauth/token"
     },
-    "slack-token-readme": "slack token is for idstest.slack.com, slack user email: jaunin.b@fr.ibm.com , password: zNbPbT",
-    "slack-token":"xoxp-23743188883-23747253174-23746641776-99f4e8c68a",
+    "slack-token-readme": "slack token is for idstest2.slack.com, slack user email: jaunin.b@fr.ibm.com , password: zNbPbT",
+    "slack-token":"xoxp-35521204752-35533792034-35528306593-096f3ee690",
     "test-tiam-readme": "itam id and tiam secret obtained from simon helsen to have fake toolchain and service creds",
     "test-tiam-id" : "test",
     "test-tiam-secret" : "72heYpy2weRih8I3KTxdMVOy90bBpQB0WDY3fH2IixOaAtwnRU"
