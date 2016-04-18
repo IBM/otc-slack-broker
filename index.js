@@ -33,7 +33,6 @@ var
  async = require("async"),
  bodyParser = require("body-parser"),
  express = require("express"),
- fetchAuth = require("./lib/middleware/fetch-auth"),
  https = require('https'),
  HttpsAgent = require("agentkeepalive").HttpsAgent,
  util = require("util"),
@@ -191,9 +190,6 @@ function configureAppSync(db) {
 
 	// OTC lifecycle operations (i.e. provision, bind, unprovision, unbind)
 	.use("/slack-broker/api/v1/service_instances", require("./lib/middleware/service_instances"))
-	
-    // Fetch the Auth information from the Authorization header.
-	.use(fetchAuth.fetch)
 	
 	// Endpoint for the lifecycle messaging store and toolchain api lifecycle events
 	.use("/slack-broker/api/v1/messaging", require("./lib/event/event"))
