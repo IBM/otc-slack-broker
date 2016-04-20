@@ -206,11 +206,12 @@ function configureAppSync(db) {
 			return next();
 		}
 	})
+    // All routes (implemented or not) are handled by the code above.
 	.use(function (req, res, next) {
-		logger.error(logPrefix + "Configuring application failed because route " +
-			"does not exist.");
-
-		return res.status(400).json({});
+        logger.debug(logPrefix + "The route does not exist.");
+        var errorObject = {};
+        errorObject.errorMessage = "Route doesn't exist";
+        return res.status(404).json(errorObject);
 	})
 	.listen(nconf.get("PORT"), function () {
 		util.log("listening on port " + nconf.get("PORT"));
