@@ -383,6 +383,13 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	    require("./event_otc_broker_4_unbind")	    
 	];
 	
+	var expected_slack_messages = [
+	    false, 
+	    false,
+	    true,
+	    true
+	];
+	
 	t.plan(events.length * 3);
 	
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
@@ -399,15 +406,26 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
             
             // ensure the slack message has been posted
             getLastSlackMessages(function(err, result) {
-            	if (err || !result) {
-            		t.fail(err)
+            	if (err) {
+            		t.fail("Error while retrieving Slack message");
+            		t.fail(err);
             	} else {
-            		var expectedUserName = "Toolchain '" + event.payload.toolchain_guid +"'";
-            		t.equal(result.length, 1, "only a single Slack message here !");
-            		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully for event ' + index + '?');
+                    if (expected_slack_messages[index]) {
+                    	if (!result) {
+                    		t.fail("Problem while retrieving Slack message");
+                    		t.fail("No message found");                        		
+                    	} else {
+                    		var expectedUserName = "Toolchain '" + event.payload.toolchain_guid +"'";
+                    		t.equal(result.length, 1, "is there only a single Slack message found ?");
+                    		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully for event ' + index + '?');                        		
+                    	}
+                    } else {
+    	            	t.pass("Event is not expected to produce Slack Message");
+                		t.equal(result, null, "is no slack message found here ?");
+                    }
             	}
                 callback();
-            });
+            });            	
         });			
 	}, function(err) {
    		if (err) {
