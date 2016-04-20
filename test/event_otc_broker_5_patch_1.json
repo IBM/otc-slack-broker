@@ -1,0 +1,45 @@
+{
+	"toolchain_id": "01414758-c438-432e-9092-a101e70b618a",
+	"service_id": "toolchain",
+	"instance_id": "123456789",
+	"payload": {
+		"toolchain_guid": "01414758-c438-432e-9092-a101e70b618a",
+		"event": "provision",
+		"services": [{
+			"broker_id": "12345678-9123-4567-8912-345678012saucelabs",
+			"service_id": "saucelabs",
+			"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646",
+			"parameters": {
+				"username": "jauninb",
+				"key": "14812b92-efa6-4965-9998-e21061a1dfa7",
+				"label": "jauninb"
+			},
+			"status": {
+				"state": "configuring"
+			},
+			"dashboard_url": "https://saucelabs.com/account",
+			"instance_id": "122b1cbe-6d0a-4f06-a80b-5d936e1354cc",
+			"url": "https://otc-saucelabs-broker.stage1.ng.bluemix.net/saucelabs-broker/api",
+			"description": "Automate continuous integration testing for your project.",
+			"tags": ["third-party",
+			"code",
+			"manage",
+			"test"],
+			"toolchain_binding": {
+				"status": {
+					"state": "configured"
+				},
+				"name": "test"
+			}
+		}],
+		"user_info": {
+			"user_id": "fa0c65b2-0f37-4c6f-8c38-0c64509a21ad",
+			"user_name": "jaunin.b@fr.ibm.com",
+			"email": "jaunin.b@fr.ibm.com",
+			"name": "jaunin.b@fr.ibm.com jaunin.b@fr.ibm.com",
+			"tiam_id_token": ""
+		},
+		"token": "",
+		"tool": "toolchain"
+	}
+}

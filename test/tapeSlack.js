@@ -380,14 +380,18 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	    require("./event_otc_broker_1_provisionning"),
 	    require("./event_otc_broker_2_configuring"),
 	    require("./event_otc_broker_3_configured"),	    
-	    require("./event_otc_broker_4_unbind")	    
+	    require("./event_otc_broker_4_unbind"),	    
+	    require("./event_otc_broker_5_patch_1"),	    
+	    require("./event_otc_broker_5_patch_2")	    
 	];
 	
 	var expected_slack_messages = [
 	    false, 
 	    false,
 	    true,
-	    true
+	    true,
+	    false,
+	    true	    
 	];
 	
 	t.plan(events.length * 3);
