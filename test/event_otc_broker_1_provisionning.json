@@ -1,39 +1,59 @@
 {
-    "toolchain_id": "01414758-c438-432e-9092-a101e70b618a",
-    "service_id": "toolchain",
-    "instance_id": "123456789",
+	"toolchain_id": "01414758-c438-432e-9092-a101e70b618a",
+	"service_id": "toolchain",
+	"instance_id": "123456789",
 	"payload": {
 		"toolchain_guid": "01414758-c438-432e-9092-a101e70b618a",
-		"event": "bind",
+		"event": "provision",
 		"services": [{
-			"_id": "acbc82b3-4053-4218-9f20-6d8a0c82e3dfnewrelic",
-			"uuid": "39a9cc32-0525-4f84-bb09-18242b3beedfservice12",
-			"service_id": "newrelic",
-			"description": "Monitor your applications with New Relic APM",
-			"url": "https://otc-newrelic-broker.stage1.ng.bluemix.net/newrelic-broker/api",
-			"tags": ["third-party",
-			"manage",
-			"learn"],
-			"parameters": {
-				"api_key": "xxx"
-			},
+			"broker_id": "12345678-9123-4567-8912-345678012githubpublic",
+			"service_id": "githubpublic",
 			"organization_guid": "8d34d127-d3db-43cd-808b-134b388f1646",
 			"status": {
-				"state": "configuring"
+				"state": "configured"
 			},
-			"instance_id": "60a83a85-3d14-40b7-9f6d-9daa66925fc1",
+			"instance_id": "a1a58c36-0104-48ac-828b-146038fc01bc",
+			"url": "https://otc-github-public-broker.stage1.ng.bluemix.net/github-broker/api",
+			"parameters": {
+				"repo_name": "catalog-api-toolchain-demo-1461156573819",
+				"repo_url": "https://github.com/jauninb/catalog-api-toolchain-demo-1461156573819.git",
+				"type": "clone",
+				"has_issues": false,
+				"owner_id": "jauninb",
+				"label": "catalog-api-toolchain-demo-1461156573819",
+				"extra_capabilities": [{
+					"capability_id": "github.issues",
+					"display_name": "Issues",
+					"dashboard_url": "https://github.com/jauninb/catalog-api-toolchain-demo-1461156573819/issues",
+					"label": "catalog-api-toolchain-demo-1461156573819",
+					"tags": ["think",
+					"code"],
+					"enabled": false
+				}],
+				"api_root_url": "https://api.github.com",
+				"token_url": "https://otc-github-public-broker.stage1.ng.bluemix.net/github/token"
+			},
+			"dashboard_url": "https://github.com/jauninb/catalog-api-toolchain-demo-1461156573819",
+			"description": "Store your source code with the GitHub Service.",
+			"tags": ["third-party",
+			"code",
+			"collaboration",
+			"scm"],
 			"toolchain_binding": {
 				"status": {
 					"state": "new"
-				}
+				},
+				"name": "catalog-api-repo"
 			}
 		}],
 		"user_info": {
-	         "user_id": "065843c2-61c9-438a-9ec2-1de474cd8b6d",
-	         "user_name": "curtispd@ca.ibm.com",
-	         "email": "curtispd@ca.ibm.com",
-	         "name": "Curtis d'Entremont",
-	         "tiam_id_token": "***"
-        }		
+			"user_id": "fa0c65b2-0f37-4c6f-8c38-0c64509a21ad",
+			"user_name": "jaunin.b@fr.ibm.com",
+			"email": "jaunin.b@fr.ibm.com",
+			"name": "jaunin.b@fr.ibm.com jaunin.b@fr.ibm.com",
+			"tiam_id_token": ""
+		},
+		"token": "",
+		"tool": "toolchain"
 	}
 }

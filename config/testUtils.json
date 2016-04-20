@@ -1,22 +1,6 @@
 {
-    "userArray": [
-        {
-            "testusername": "idsb3t4@us.ibm.com",
-            "testpassword": "JhubPa88_0122",
-            "organization_guid": "8a5b49de-1a3c-4075-b3ec-bd25d90ae2a1"
-        },
-        {
-            "testusername": "idsb3t2@us.ibm.com",
-            "testpassword": "JhubPa88_0122",
-            "organization_guid": "9545845d-4f88-4979-a5c8-279240c7377a"
-        }
-    ],
-    "auth-header": "Y2Y6",
-    "uaa": {
-        "fetchTokenURL": "https://login.stage1.ng.bluemix.net/UAALoginServerWAR/oauth/token"
-    },
-    "slack-token-readme": "slack token is for idstest2.slack.com, slack user email: jaunin.b@fr.ibm.com , password: zNbPbT",
-    "slack-token":"xoxp-35521204752-35533792034-35528306593-096f3ee690",
+    "slack-token-readme": "slack token is for idstest.slack.com, slack user email: jaunin.b@fr.ibm.com , password: zNbPbT",
+    "slack-token":"xoxp-23743188883-23747253174-23746641776-99f4e8c68a",
     "test-tiam-readme": "itam id and tiam secret obtained from simon helsen to have fake toolchain and service creds",
     "test-tiam-id" : "test",
     "test-tiam-secret" : "72heYpy2weRih8I3KTxdMVOy90bBpQB0WDY3fH2IixOaAtwnRU"
