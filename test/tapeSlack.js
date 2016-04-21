@@ -6,15 +6,16 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  */
-var nconf = require('nconf'),
-    request = require("request"),
+var 
+	async = require('async'),
+	nconf = require('nconf'),
     path = require('path'),
     Q = require('q'),
+    request = require("request"),
+	slackClient = require("../lib/client/slack-client"),
     Slack = require('slack-node'),
-    _ = require('underscore'),
     test = require('tape'),
-    async = require('async'),
-	slackClient = require("../lib/client/slack-client")
+    _ = require('underscore')
 ;
 
 nconf.env("__");
@@ -27,18 +28,13 @@ nconf.file('test', path.join(__dirname, '..', 'config', 'dev.json'));
 // Load in the user information.
 nconf.file('testUtils', path.join(__dirname, '..', 'config', 'testUtils.json'));
 
-var header = {
-    authorization: "Basic Y2Y6",
-    accept: "application/json"
-};
-
 var defaultHeaders = {
     'Accept': 'application/json,text/json',
     'Content-Type': 'application/json'
 };
 
 var mockServiceInstanceId = "tape" + new Date().getTime();
-var mockToolchainId = "06178d7e-cf36-4a80-ad82-8c9f428f3ea9";
+var mockToolchainId = "2e538e2e-b01a-45f1-8a4d-97311ce8ec0b";
 
 var tiamCredentials = {};
 
@@ -54,6 +50,55 @@ slack_channel.name += pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getS
 var event_endpoints = {};
 
 var slack = new Slack(nconf.get("slack-token"));
+
+var nock;
+
+var nockMode = false;
+var app = require('../app');
+var server;
+
+test('Slack Broker - Setup', function(t) {
+	if (nockMode) {
+		t.comment("Doing Nock mode ops");
+		nock = require("nock");
+		//nock.recorder.rec({dont_print: true, output_objects: true});	
+		
+		// Configure Nock endpoints
+		// TIAM Nocks
+		nocks = nock.load(__dirname + "/nocks/tiamNocks.json");
+		nocks.forEach(function(nock) {
+			// Add Scope filtering for TIAM_URL
+			console.log(nock);
+		});
+		// OTC-API Nock
+		nocks = nock.load(__dirname + "/nocks/otcApiNocks.json");
+		nocks.forEach(function(nock) {
+			// Add Scope filtering to OTC API
+			console.log(nock);
+		});
+		
+		// Start the server
+	    t.plan(2);
+	    app.configureMiddleware(function(err) {
+	        if (!err) {
+	            server = app.server.listen(nconf.get('PORT'), 'localhost', function(err) {
+	                if (err) {
+	                    console.error('error occurred while starting server: ' + JSON.stringify(err));
+	                    t.fail('server didnt start listening');
+	                    return;
+	                }
+	                console.log('server started on port ' + nconf.get('PORT'));
+	                t.pass('server started listening');
+	            });
+	        }
+	        t.notOk(err, 'Did the server start without an error?');
+	    });		
+	} else {
+	    t.plan(1);
+		t.end();		
+	}
+});
+
 
 test('Slack Broker - Test Channel Name Validation', function (t) {
 	t.plan(6);
@@ -351,7 +396,7 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 
 	// Simulate a Pipeline event
-	var message_store_pipeline_event = require("./event_lms_pipeline_stage_started");
+	var message_store_pipeline_event = require("./data/event_lms_pipeline_stage_started");
 	message_store_pipeline_event.toolchain_id = mockToolchainId;
 	message_store_pipeline_event.instance_id = mockServiceInstanceId;
 	
@@ -377,12 +422,12 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
 test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	
 	var events = [
-	    require("./event_otc_broker_1_provisionning"),
-	    require("./event_otc_broker_2_configuring"),
-	    require("./event_otc_broker_3_configured"),	    
-	    require("./event_otc_broker_4_unbind"),	    
-	    require("./event_otc_broker_5_patch_1"),	    
-	    require("./event_otc_broker_5_patch_2")	    
+	    require("./data/event_otc_broker_1_provisionning"),
+	    require("./data/event_otc_broker_2_configuring"),
+	    require("./data/event_otc_broker_3_configured"),	    
+	    require("./data/event_otc_broker_4_unbind"),	    
+	    require("./data/event_otc_broker_5_patch_1"),	    
+	    require("./data/event_otc_broker_5_patch_2")	    
 	];
 	
 	var expected_slack_messages = [
@@ -394,7 +439,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	    true	    
 	];
 	
-	t.plan(events.length * 3);
+	t.plan(events.length * 2);
 	
 	var messagingEndpoint = nconf.get('url') + '/slack-broker/api/v1/messaging/accept';
 	
@@ -402,6 +447,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
 	
 	async.forEachOfSeries(events, function(event, index, callback) {
 		event.toolchain_id = mockToolchainId;
+		event.payload.toolchain_guid = mockToolchainId;
 		event.instance_id = mockServiceInstanceId;
 
 		postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(event)})
@@ -411,21 +457,21 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
             // ensure the slack message has been posted
             getLastSlackMessages(function(err, result) {
             	if (err) {
-            		t.fail("Error while retrieving Slack message");
-            		t.fail(err);
+            		t.fail("Error while retrieving Slack message:" + err);
             	} else {
                     if (expected_slack_messages[index]) {
                     	if (!result) {
-                    		t.fail("Problem while retrieving Slack message");
-                    		t.fail("No message found");                        		
+                    		t.fail("Problem while retrieving Slack message: No message found");                        		
                     	} else {
                     		var expectedUserName = "Toolchain '" + event.payload.toolchain_guid +"'";
-                    		t.equal(result.length, 1, "is there only a single Slack message found ?");
-                    		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'did the slack message been created successfully for event ' + index + '?');                        		
+                    		if (result.length == 1 && result[0].username.startsWith("Toolchain")) {
+                        		t.pass('did the slack message been created successfully for event ' + index + '?');                        		                    			
+                    		} else {
+                        		t.fail('did the slack message been created successfully for event ' + index + '?');                        		                    			
+                    		}
                     	}
                     } else {
     	            	t.pass("Event is not expected to produce Slack Message");
-                		t.equal(result, null, "is no slack message found here ?");
                     }
             	}
                 callback();
@@ -701,6 +747,49 @@ test('Slack Broker - Archive Test Slack Channel', function(t) {
     	}
     });                            
 });
+
+test('Slack Broker - Teardown', function(t) {
+
+	/* Nock Record related work
+	var nockCalls = nock.recorder.play();
+	
+	// Keep a single nock instance by removing the headers.date property and call uniq
+	nockCalls = _.uniq(nockCalls, false, function(nockCall) {
+		// return a unique id for each object
+		return nockCall.method + " " + nockCall.scope + nockCall.path + " " + nockCall.status;
+	})
+	
+	var url =  require("url");
+	var tiamUrl = url.parse(nconf.get("TIAM_URL"));
+	// Only keep tiam and otc-api ones
+	var tiamNocks = _.filter(nockCalls, function(nockCall) {
+		var nockScopeUrl = url.parse(nockCall.scope); 
+		return tiamUrl.hostname == nockScopeUrl.hostname;
+	});
+	var otcApiUrl = url.parse(nconf.get("services:otc_api"));
+	var otcApiNocks = _.filter(nockCalls, function(nockCall) {
+		var nockScopeUrl = url.parse(nockCall.scope); 
+		return otcApiUrl.hostname == nockScopeUrl.hostname && otcApiUrl.port == nockScopeUrl.port;
+	});	
+	const fs = require('fs'); 
+	fs.writeFileSync(__dirname + '/nocks/tiamNocks.json', JSON.stringify(tiamNocks));
+	fs.writeFileSync(__dirname + '/nocks/otcApiNocks.json', JSON.stringify(otcApiNocks));
+	
+	*/
+    t.plan(1);
+	if (nockMode) {
+		t.comment("Doing Nock mode ops");
+	    server.close(function(err) {
+	        t.notOk(err, 'did the server close?');
+	        process.exit();
+	    });
+	} else {
+		console.log("Real end");
+		t.end();		
+	}
+});
+
+
 
 
 // Utility functions

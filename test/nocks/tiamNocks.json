@@ -1,0 +1,185 @@
+[{
+	"scope": "https://devops-api.stage1.ng.bluemix.net:443",
+	"method": "POST",
+	"path": "/v1/identity/service/manage/slack/tape1461247196142/2e538e2e-b01a-45f1-8a4d-97311ce8ec0b",
+	"body": "",
+	"status": 201,
+	"response": {
+		"toolchain_credentials": "dGFwZTE0NjEyNDcxOTYxNDI6ezEyOH0wNjBiZmM1NTg4NWQyYjg4MTI2NzlmZmU0YmZhMWU0Yyo4MTRlMmM1NjJmZTM4OWZiNzc0ZDY5NzgwOTU3ZmUzOGZmZDUzMjMyOWE2MWRhYjFhMWZhNDZkNTc1YzIyNDJmMmZjYmNhZGI1MjdiNTMyMzY0OTU2M2ZiNTc3ZTRlOGYxZjhjMmYxMDQzZGU4MmU1NGNiNjZjZmQ0MjcxODkxYzMxZmVmMDBkOWEwM2U0MjRlNzBjOTM0Y2M2YTUxMjMyM2ZkNTFjZmJjNDExOTZhMTc3ZTc2NjE2ODllZTZmMTkzNzhmMDJiOTkxOWZiY2IyODc3ZDA2YzQ2YzZhNThiMA"
+	},
+	"headers": {
+		"x-backside-transport": "OK OK,OK OK",
+		"connection": "Keep-Alive",
+		"transfer-encoding": "chunked",
+		"cache-control": "no-cache=\"set-cookie, set-cookie2\"",
+		"content-type": "application/json",
+		"date": "Thu, 21 Apr 2016 13:59:55 GMT",
+		"expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+		"server": "nginx/1.9.14",
+		"set-cookie": ["__VCAP_ID__=7dd32631ce59467c944387c84fc27b5d6703fc6f8caa4311825db61d7d9746a7; Path=/; HttpOnly",
+		"__VCAP_ID__=e3a0acf418f24062b6ac8e385e8ed6c2c979cd836fa24f549280455b17df4077; Path=/; HttpOnly",
+		"JSESSIONID=0000UC1Jdq3H9iT-z-HCkqA_XRG:d9ae6e2a-aee1-46d1-b078-85c5c58c8e7f; Path=/; HttpOnly"],
+		"x-cf-requestid": "9ea9bb39-c53a-4d84-4756-9b56260bcd10,82945e73-f79d-4a26-4bbe-9e49af553c03",
+		"x-client-ip": "192.155.236.131,9.101.101.59",
+		"x-global-transaction-id": "3468781327",
+		"x-powered-by": "Servlet/3.1",
+		"x-archived-client-ip": "192.155.236.131"
+	}
+},{
+	"scope": "https://devops-api.stage1.ng.bluemix.net:443",
+	"method": "POST",
+	"path": "/v1/identity/service/manage/slack/tape1461247196142",
+	"body": "",
+	"status": 201,
+	"response": {
+		"service_credentials": "dGFwZTE0NjEyNDcxOTYxNDI6ezEyOH00OTc2NWIyYzBlM2U5MDFmZWJlOWYzYjkzYzIyODU3NSplYjcyMTIyZDIyOWY1ZDEzZjgzNmQzYWQ4YWE3OTkzNTI2YjRjNzA2NDI3Y2QxYTk2YjQzYzgyMGExNjhjNGM2YjA0OWQwZDJhYTgzMmViZGY2ZWY3OGIyOGJkNjJmYjE0NGRhMWNiOTNlZTVlNzExMjM2MmZjYTQwYzhkZTlmOQ"
+	},
+	"headers": {
+		"x-backside-transport": "OK OK,OK OK",
+		"connection": "Keep-Alive",
+		"transfer-encoding": "chunked",
+		"cache-control": "no-cache=\"set-cookie, set-cookie2\"",
+		"content-type": "application/json",
+		"date": "Thu, 21 Apr 2016 13:59:55 GMT",
+		"expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+		"server": "nginx/1.9.14",
+		"set-cookie": ["__VCAP_ID__=7dd32631ce59467c944387c84fc27b5d6703fc6f8caa4311825db61d7d9746a7; Path=/; HttpOnly",
+		"__VCAP_ID__=e3a0acf418f24062b6ac8e385e8ed6c2c979cd836fa24f549280455b17df4077; Path=/; HttpOnly",
+		"JSESSIONID=0000NQx1ERiJJqWG886gicx_WmZ:d9ae6e2a-aee1-46d1-b078-85c5c58c8e7f; Path=/; HttpOnly"],
+		"x-cf-requestid": "cce35756-3cc2-4cfc-6f72-89a2836bc182,681384cb-644d-4b50-7b03-87ec23dd1e73",
+		"x-client-ip": "192.155.236.131,9.101.101.59",
+		"x-global-transaction-id": "1758908959",
+		"x-powered-by": "Servlet/3.1",
+		"x-archived-client-ip": "192.155.236.131"
+	}
+},{
+	"scope": "https://devops-api.stage1.ng.bluemix.net:443",
+	"method": "POST",
+	"path": "/v1/identity/service/manage/credentials?target=tape1461247196142&toolchain=2e538e2e-b01a-45f1-8a4d-97311ce8ec0b",
+	"body": "",
+	"status": 201,
+	"response": {
+		"target_credentials": "dGVzdDp7MTI4fWJiYzI1YTcyNDY1MDE2N2ZiNmY0ODdjNzFiNzNjNDQ4KjZhYTM1ZDdlZDg2YTA0NWE2ZjVlMjkwY2UxMTFjZTA0NDNhODcxMGFjN2NkNTdlZGQ5ZWNmMTc4MGNkZGJjNzRmYTMzOWJiMzU3ODY3MmU5ODhjMzJiMTFlYThkY2U5YWZjNGVhZjg1ODk0NTcxNmU0ZTg1MWRmYzcxOTE0OGExZGRkZTg2M2I4ZmIwMGZkNWY2ZjU2MDlhNGI5YzBlY2JhNzVkNTg0MjBhMDBmNTRkMGFiODcxZTY3YjExOWMzN2IzZTMxOGQ0ZjBhYzQyYWQ2MDJjNmUwZjdiMDAwNjI0ZjVhZGUyNTBkYzE3NjZkMDVjMDRiNTIyM2FiNWMxMjZjN2ZjZmFiMDMwMTNjMzFhNjMxMGI1ZjY1ZDhiMGJkZg"
+	},
+	"headers": {
+		"x-backside-transport": "OK OK,OK OK",
+		"connection": "Keep-Alive",
+		"transfer-encoding": "chunked",
+		"cache-control": "no-cache=\"set-cookie, set-cookie2\"",
+		"content-type": "application/json",
+		"date": "Thu, 21 Apr 2016 13:59:56 GMT",
+		"expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+		"server": "nginx/1.9.14",
+		"set-cookie": ["__VCAP_ID__=b021347ffd82492c9102a507e91f5c193951a6fd98bc4a809101551c32e50ad2; Path=/; HttpOnly",
+		"__VCAP_ID__=358a0d960d9f4d4796be0a207ee2e226ddfade6c0e714e82af39c1467fdf89ee; Path=/; HttpOnly",
+		"JSESSIONID=0000l5CH4K5jKk_OFAkM_QafH-B:060c2401-33bb-450f-a584-a0aaf04ec343; Path=/; HttpOnly"],
+		"x-cf-requestid": "a222a24a-e2f9-41b3-6752-61d857555d63,4e0199aa-6d54-49f7-5400-9975372a932b",
+		"x-client-ip": "75.126.172.243,9.101.101.59",
+		"x-global-transaction-id": "3850659599",
+		"x-powered-by": "Servlet/3.1",
+		"x-archived-client-ip": "75.126.172.243"
+	}
+},{
+	"scope": "https://devops-api.stage1.ng.bluemix.net:443",
+	"method": "POST",
+	"path": "/v1/identity/service/manage/credentials",
+	"body": "",
+	"status": 201,
+	"response": {
+		"target_credentials": "dGFwZTE0NjEyNDcxOTYxNDI6ezEyOH0xOGJkYmIwZTg1YTE0ODMwMDg0OTEyYmE3YmQzYTdjOCo3MzIxMzFmZTk4NTVhODVkOTkxMTkxZDhkY2NlZTY0MTgwM2Y3YmUxMzI1ZDUxYzBiZmE4ZGFkYTg5MGMwY2JiMWU4YjRlODE2ODY2OTdiNGQ2NzRlNDk5ZWVmNmE2NjM5NGM4MzQ5OTdjNWI4YmFjOTEwMDQ0MTRmYzNjZTgwYTA4ZTJiMjcwNzdlMmIwYzllM2M2OTc5MmE4ZmI5ODNiNmRkZWQ1ZWQzOThiZGZiYjY2ZTNmMDJjMGRkZGY4ZmU1NjNhNjAxNDI1ZWIxZGY4NjczNDFlYjc5NTliYzAwNg"
+	},
+	"headers": {
+		"x-backside-transport": "OK OK,OK OK",
+		"connection": "Keep-Alive",
+		"transfer-encoding": "chunked",
+		"cache-control": "no-cache=\"set-cookie, set-cookie2\"",
+		"content-type": "application/json",
+		"date": "Thu, 21 Apr 2016 14:00:09 GMT",
+		"expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+		"server": "nginx/1.9.14",
+		"set-cookie": ["__VCAP_ID__=b021347ffd82492c9102a507e91f5c193951a6fd98bc4a809101551c32e50ad2; Path=/; HttpOnly",
+		"__VCAP_ID__=1e7a9985e63a43eab705024bb4eda21550f910ff0b844944972293218aff23ea; Path=/; HttpOnly",
+		"JSESSIONID=0000WXiQ4MnS4YA7tMuxTjcRj2h:ffa06ea1-2904-4bbf-a17f-ce8d5c9effdc; Path=/; HttpOnly"],
+		"x-cf-requestid": "34de47a1-77b4-4334-71a9-dd7fbc173448,6dd3e0e9-b41d-48c7-4bb7-c3211cc07ab9",
+		"x-client-ip": "75.126.172.243,9.101.101.59",
+		"x-global-transaction-id": "1717334689",
+		"x-powered-by": "Servlet/3.1",
+		"x-archived-client-ip": "75.126.172.243"
+	}
+},{
+	"scope": "https://devops-api.stage1.ng.bluemix.net:443",
+	"method": "GET",
+	"path": "/v1/identity/service/manage/introspect?credentials=dGVzdDp7MTI4fWJiYzI1YTcyNDY1MDE2N2ZiNmY0ODdjNzFiNzNjNDQ4KjZhYTM1ZDdlZDg2YTA0NWE2ZjVlMjkwY2UxMTFjZTA0NDNhODcxMGFjN2NkNTdlZGQ5ZWNmMTc4MGNkZGJjNzRmYTMzOWJiMzU3ODY3MmU5ODhjMzJiMTFlYThkY2U5YWZjNGVhZjg1ODk0NTcxNmU0ZTg1MWRmYzcxOTE0OGExZGRkZTg2M2I4ZmIwMGZkNWY2ZjU2MDlhNGI5YzBlY2JhNzVkNTg0MjBhMDBmNTRkMGFiODcxZTY3YjExOWMzN2IzZTMxOGQ0ZjBhYzQyYWQ2MDJjNmUwZjdiMDAwNjI0ZjVhZGUyNTBkYzE3NjZkMDVjMDRiNTIyM2FiNWMxMjZjN2ZjZmFiMDMwMTNjMzFhNjMxMGI1ZjY1ZDhiMGJkZg",
+	"body": "",
+	"status": 200,
+	"response": {
+		"fabric": true,
+		"service_id": "00000000-0000-0000-0000-000000000000",
+		"service_instance_id": "00000000-0000-0000-0000-000000000000",
+		"toolchain_id": "2e538e2e-b01a-45f1-8a4d-97311ce8ec0b"
+	},
+	"headers": {
+		"x-backside-transport": "OK OK,OK OK",
+		"connection": "Keep-Alive",
+		"transfer-encoding": "chunked",
+		"cache-control": "no-cache=\"set-cookie, set-cookie2\"",
+		"content-type": "application/json",
+		"date": "Thu, 21 Apr 2016 14:00:10 GMT",
+		"expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+		"server": "nginx/1.9.14",
+		"set-cookie": ["__VCAP_ID__=10f70a6d5833455fb4ef67da18925aa5ff1bdb2f37534ed2823abcfce5b11466; Path=/; HttpOnly",
+		"__VCAP_ID__=1e7a9985e63a43eab705024bb4eda21550f910ff0b844944972293218aff23ea; Path=/; HttpOnly",
+		"JSESSIONID=0000RWRu70l5D62MUVzrtODTD9v:ffa06ea1-2904-4bbf-a17f-ce8d5c9effdc; Path=/; HttpOnly"],
+		"x-cf-requestid": "b85ff8c7-877d-494d-5251-9d07d32251a0,afc81a68-b5b6-4bbc-6895-2d9aeec94180",
+		"x-client-ip": "169.45.158.56,9.101.101.59",
+		"x-global-transaction-id": "901348727",
+		"x-powered-by": "Servlet/3.1",
+		"x-archived-client-ip": "169.45.158.56"
+	}
+},{
+	"scope": "https://devops-api.stage1.ng.bluemix.net:443",
+	"method": "DELETE",
+	"path": "/v1/identity/service/manage/slack/tape1461247196142",
+	"body": "",
+	"status": 204,
+	"response": "",
+	"headers": {
+		"x-backside-transport": "OK OK,OK OK",
+		"connection": "Keep-Alive",
+		"cache-control": "no-cache=\"set-cookie, set-cookie2\"",
+		"date": "Thu, 21 Apr 2016 14:00:51 GMT",
+		"expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+		"server": "nginx/1.9.14",
+		"set-cookie": ["__VCAP_ID__=7dd32631ce59467c944387c84fc27b5d6703fc6f8caa4311825db61d7d9746a7; Path=/; HttpOnly",
+		"__VCAP_ID__=1e7a9985e63a43eab705024bb4eda21550f910ff0b844944972293218aff23ea; Path=/; HttpOnly",
+		"JSESSIONID=0000EwHImObCg5LhSNxg_jjEnVT:ffa06ea1-2904-4bbf-a17f-ce8d5c9effdc; Path=/; HttpOnly"],
+		"x-cf-requestid": "49d64755-0077-4edb-675f-f7e3812aabf1,c0462310-0e63-44b8-788a-887ff19fd8a4",
+		"x-client-ip": "192.155.236.131,9.101.101.59",
+		"x-global-transaction-id": "974345271",
+		"x-powered-by": "Servlet/3.1",
+		"x-archived-client-ip": "192.155.236.131"
+	}
+},{
+	"scope": "https://devops-api.stage1.ng.bluemix.net:443",
+	"method": "DELETE",
+	"path": "/v1/identity/service/manage/slack/tape1461247196142/2e538e2e-b01a-45f1-8a4d-97311ce8ec0b",
+	"body": "",
+	"status": 204,
+	"response": "",
+	"headers": {
+		"x-backside-transport": "OK OK,OK OK",
+		"connection": "Keep-Alive",
+		"cache-control": "no-cache=\"set-cookie, set-cookie2\"",
+		"date": "Thu, 21 Apr 2016 14:00:51 GMT",
+		"expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+		"server": "nginx/1.9.14",
+		"set-cookie": ["__VCAP_ID__=10f70a6d5833455fb4ef67da18925aa5ff1bdb2f37534ed2823abcfce5b11466; Path=/; HttpOnly",
+		"__VCAP_ID__=358a0d960d9f4d4796be0a207ee2e226ddfade6c0e714e82af39c1467fdf89ee; Path=/; HttpOnly",
+		"JSESSIONID=0000PRXgMXmSDpP_GMtyuxNvgJK:060c2401-33bb-450f-a584-a0aaf04ec343; Path=/; HttpOnly"],
+		"x-cf-requestid": "07cd0475-643f-4701-5945-9852fabf0028,93392dfa-fd9a-4ba6-7bc2-ca2249a9aaec",
+		"x-client-ip": "169.45.158.56,9.101.101.59",
+		"x-global-transaction-id": "901580759",
+		"x-powered-by": "Servlet/3.1",
+		"x-archived-client-ip": "169.45.158.56"
+	}
+}]
