@@ -54,7 +54,6 @@ app.configureMiddleware(function(err) {
 /**************************** Server listening ********************************/
 
 function populateNconfSync() {
-	console.log("populateNconfSync");
 	/* Load up configuration.
 	   - ENVVARs override...
 	   - Whatever's in the VCAP_SERVICES envvar (parsed as json) which overrides...

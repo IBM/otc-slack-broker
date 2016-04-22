@@ -51,50 +51,62 @@ var event_endpoints = {};
 
 var slack = new Slack(nconf.get("slack-token"));
 
+// Nock related 
 var nock;
-
 var nockMode = false;
-var app = require('../app');
+// To be fully operational, recordMode is only valid if nockMode is enabled
+// in order to capture all the server side request to mock/nock
+var nockRecordMode = false && nockMode;
 var server;
 
 test('Slack Broker - Setup', function(t) {
 	if (nockMode) {
-		t.comment("Doing Nock mode ops");
 		nock = require("nock");
-		//nock.recorder.rec({dont_print: true, output_objects: true});	
-		
-		// Configure Nock endpoints
-		// TIAM Nocks
-		nocks = nock.load(__dirname + "/nocks/tiamNocks.json");
-		nocks.forEach(function(nock) {
-			// Add Scope filtering for TIAM_URL
-			console.log(nock);
-		});
-		// OTC-API Nock
-		nocks = nock.load(__dirname + "/nocks/otcApiNocks.json");
-		nocks.forEach(function(nock) {
-			// Add Scope filtering to OTC API
-			console.log(nock);
-		});
-		
+
+		if (nockRecordMode) {
+			nock.recorder.rec({dont_print: true, output_objects: true});				
+		} else {
+			t.comment("Doing Nock mode ops");
+	
+			// Configure Nock endpoints
+			// TIAM Nocks
+			nocks = nock.load(__dirname + "/nocks/tiamNocks.json");
+			nocks.forEach(function(aNock) {
+				// Add Scope filtering for TIAM_URL for mockServiceInstanceId
+				aNock.filteringPath(function(path) {
+					return path.replace(mockServiceInstanceId, "tape00000000000000");
+	            });
+				aNock.persist();
+				//aNock.log(console.log);
+			});
+			// OTC-API Nock
+			nocks = nock.load(__dirname + "/nocks/otcApiNocks.json");
+			nocks.forEach(function(aNock) {
+				// Add Scope filtering to OTC API
+				//console.log(nock);
+				aNock.persist();
+				//aNock.log(console.log);
+			});
+		}
+	
 		// Start the server
 	    t.plan(2);
+	    var app = require('../app');
 	    app.configureMiddleware(function(err) {
 	        if (!err) {
 	            server = app.server.listen(nconf.get('PORT'), 'localhost', function(err) {
 	                if (err) {
-	                    console.error('error occurred while starting server: ' + JSON.stringify(err));
-	                    t.fail('server didnt start listening');
+	                    t.fail('server didnt start listening: ' + JSON.stringify(err));
 	                    return;
 	                }
-	                console.log('server started on port ' + nconf.get('PORT'));
-	                t.pass('server started listening');
+	                t.pass('server started listening on port ' + nconf.get('PORT'));
 	            });
 	        }
 	        t.notOk(err, 'Did the server start without an error?');
 	    });		
 	} else {
 	    t.plan(1);
+	    t.pass("Setup done");
 		t.end();		
 	}
 });
@@ -749,43 +761,54 @@ test('Slack Broker - Archive Test Slack Channel', function(t) {
 });
 
 test('Slack Broker - Teardown', function(t) {
-
-	/* Nock Record related work
-	var nockCalls = nock.recorder.play();
-	
-	// Keep a single nock instance by removing the headers.date property and call uniq
-	nockCalls = _.uniq(nockCalls, false, function(nockCall) {
-		// return a unique id for each object
-		return nockCall.method + " " + nockCall.scope + nockCall.path + " " + nockCall.status;
-	})
-	
-	var url =  require("url");
-	var tiamUrl = url.parse(nconf.get("TIAM_URL"));
-	// Only keep tiam and otc-api ones
-	var tiamNocks = _.filter(nockCalls, function(nockCall) {
-		var nockScopeUrl = url.parse(nockCall.scope); 
-		return tiamUrl.hostname == nockScopeUrl.hostname;
-	});
-	var otcApiUrl = url.parse(nconf.get("services:otc_api"));
-	var otcApiNocks = _.filter(nockCalls, function(nockCall) {
-		var nockScopeUrl = url.parse(nockCall.scope); 
-		return otcApiUrl.hostname == nockScopeUrl.hostname && otcApiUrl.port == nockScopeUrl.port;
-	});	
-	const fs = require('fs'); 
-	fs.writeFileSync(__dirname + '/nocks/tiamNocks.json', JSON.stringify(tiamNocks));
-	fs.writeFileSync(__dirname + '/nocks/otcApiNocks.json', JSON.stringify(otcApiNocks));
-	
-	*/
-    t.plan(1);
 	if (nockMode) {
+		if (nockRecordMode) {
+			// Nock Record related work
+			var nockCalls = nock.recorder.play();
+			
+			const fs = require('fs'); 
+			fs.writeFileSync(__dirname + '/nocks/allNocks.json', JSON.stringify(nockCalls));
+			
+			// Keep a single nock instance by removing the headers.date property and call uniq
+			nockCalls = _.uniq(nockCalls, false, function(nockCall) {
+				// return a unique id for each object
+				return nockCall.method + " " + nockCall.scope + nockCall.path + " " + nockCall.status;
+			})
+			
+			// Change the path in scope to a generic Slack service instance id to 
+			// ease the filter mechanism
+			nockCalls = _.map(nockCalls, function(nockCall) {
+				nockCall.path = nockCall.path.replace(mockServiceInstanceId, "tape00000000000000");
+				return nockCall;
+			});
+			
+			var url =  require("url");
+			var tiamUrl = url.parse(nconf.get("TIAM_URL"));
+			// Only keep tiam and otc-api ones
+			var tiamNocks = _.filter(nockCalls, function(nockCall) {
+				var nockScopeUrl = url.parse(nockCall.scope); 
+				return tiamUrl.hostname == nockScopeUrl.hostname;
+			});
+			var otcApiUrl = url.parse(nconf.get("services:otc_api"));
+			var otcApiNocks = _.filter(nockCalls, function(nockCall) {
+				var nockScopeUrl = url.parse(nockCall.scope); 
+				return otcApiUrl.hostname == nockScopeUrl.hostname && otcApiUrl.port == nockScopeUrl.port;
+			});	
+			fs.writeFileSync(__dirname + '/nocks/tiamNocks.json', JSON.stringify(tiamNocks));
+			fs.writeFileSync(__dirname + '/nocks/otcApiNocks.json', JSON.stringify(otcApiNocks));
+		}
+		
+		
+	    t.plan(1);
 		t.comment("Doing Nock mode ops");
 	    server.close(function(err) {
 	        t.notOk(err, 'did the server close?');
+	        t.end();
 	        process.exit();
 	    });
+
 	} else {
-		console.log("Real end");
-		t.end();		
+		t.end();
 	}
 });
 
@@ -910,7 +933,7 @@ function postRequest(url, options) {
                     "statusCode": res[0].statusCode
                 };
             }
-        });
+        })
 }
 
 var slackMessageLatestTimeRange;
