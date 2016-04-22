@@ -17,7 +17,7 @@ log4js.configure("./config/log4js.json", {
     reloadSecs: 30
 });
 
-var logger = log4js.getLogger("slack-broker"),
+var logger = log4js.getLogger("otc-slack-broker"),
  	logBasePath = "index";
 
 //Configuration for nconf
@@ -117,6 +117,11 @@ function validateConfSync() {
 }
 
 function configureAppSync(db) {
+	// check if log level has not been overridden
+	var level = nconf.get("LOG4J_LEVEL");
+	if (level && level.length > 0)
+		logger.setLevel(level);
+	
 	var logPrefix = "[" + logBasePath + ".configureAppSync] ";
 	
 	var app = express();

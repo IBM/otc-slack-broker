@@ -27,6 +27,7 @@
 	},
 	"TIAM_URL": "",
 	"TIAM_CLIENT_ID": "",
-	"OTC_API_BROKER_SECRET": ""
+	"OTC_API_BROKER_SECRET": "",
+	"LOG4J_LEVEL": ""
 	
 }
