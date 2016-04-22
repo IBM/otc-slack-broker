@@ -67,23 +67,33 @@ test('Slack Broker - Setup', function(t) {
 			nock.recorder.rec({dont_print: true, output_objects: true});				
 		} else {
 			t.comment("Doing Nock mode ops");
-	
+			var url =  require("url");
 			// Configure Nock endpoints
-			// TIAM Nocks
-			nocks = nock.load(__dirname + "/nocks/tiamNocks.json");
+			// TIAM Nocks scope is replaced by the expected tiam url (host) in the test configuration
+			var tiamUrl = url.parse(nconf.get("TIAM_URL"));
+			var nockDefs = nock.loadDefs(__dirname + "/nocks/tiamNocks.json");
+			nockDefs.forEach(function(def) {
+			  def.scope = tiamUrl.protocol + "//" + tiamUrl.host;
+			});	
+			nocks = nock.define(nockDefs);
 			nocks.forEach(function(aNock) {
-				// Add Scope filtering for TIAM_URL for mockServiceInstanceId
+				// Add Path filtering for mockServiceInstanceId
 				aNock.filteringPath(function(path) {
+					//console.log(path);
 					return path.replace(mockServiceInstanceId, "tape00000000000000");
 	            });
 				aNock.persist();
 				//aNock.log(console.log);
 			});
-			// OTC-API Nock
-			nocks = nock.load(__dirname + "/nocks/otcApiNocks.json");
+			// OTC-API Nock scope is replaced by the expected otc-api url (host) in the test configuration
+			var otcApiUrl = url.parse(nconf.get("services:otc_api"));
+			nockDefs = nock.loadDefs(__dirname + "/nocks/otcApiNocks.json");
+			nockDefs.forEach(function(def) {
+				  def.scope = otcApiUrl.protocol + "//" + otcApiUrl.host;
+			});
+			nocks = nock.define(nockDefs);
 			nocks.forEach(function(aNock) {
 				// Add Scope filtering to OTC API
-				//console.log(nock);
 				aNock.persist();
 				//aNock.log(console.log);
 			});
@@ -183,25 +193,25 @@ test("Slack Broker - Create Test TIAM Creds", function(t) {
 	var tiamHeader = {};
 	tiamHeader.Authorization = "Basic " + new Buffer(nconf.get("test-tiam-id") + ":" + nconf.get("test-tiam-secret")).toString('base64');
 	// Create a service credentials
-	var url = nconf.get("TIAM_URL") + '/service/manage/slack/' + mockServiceInstanceId;
+	var anUrl = nconf.get("TIAM_URL") + '/service/manage/slack/' + mockServiceInstanceId;
 	//t.comment(url);
-    postRequest(url, {header: tiamHeader})
+    postRequest(anUrl, {header: tiamHeader})
 	    .then(function(result) {
 	    	t.notEqual(result.body.service_credentials, undefined, "service credentials created ?");
 	    	tiamCredentials.service_credentials = result.body.service_credentials;
 	    });        		
     
     // Create a toolchain credentials
-    url = url + "/" + mockToolchainId;
-    postRequest(url, {header: tiamHeader})
+    anUrl = anUrl + "/" + mockToolchainId;
+    postRequest(anUrl, {header: tiamHeader})
     .then(function(result) {
     	t.notEqual(result.body.toolchain_credentials, undefined, "toolchain credentials created ?");
     	tiamCredentials.toolchain_credentials = result.body.toolchain_credentials;
     });        		
     
     // Create an target_credentials credentials to access the slack serviceid and toolchain
-    url = nconf.get("TIAM_URL") + '/service/manage/credentials?target=' + mockServiceInstanceId + '&toolchain=' + mockToolchainId;
-    postRequest(url, {header: tiamHeader})
+    anUrl = nconf.get("TIAM_URL") + '/service/manage/credentials?target=' + mockServiceInstanceId + '&toolchain=' + mockToolchainId;
+    postRequest(anUrl, {header: tiamHeader})
     .then(function(result) {
     	t.notEqual(result.body.target_credentials, undefined, "target_credentials created ?");
     	tiamCredentials.target_credentials = result.body.target_credentials;
@@ -212,12 +222,12 @@ test("Slack Broker - Create Test TIAM Creds", function(t) {
 test('Slack Broker - Test PUT instance', function (t) {
     t.plan(6);
 
-    var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
+    var anUrl = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {};
     
     async.series([
 	    function(callback) {
-	        putRequest(url, {header: header, body: null})
+	        putRequest(anUrl, {header: header, body: null})
 	        .then(function(resultNoBody) {
 	            t.equal(resultNoBody.statusCode, 400, 'did the put instance call with no body fail?');
 	            callback();
@@ -225,7 +235,7 @@ test('Slack Broker - Test PUT instance', function (t) {
 	    },
 	    function(callback) {
             body.service_id = 'slack';
-            putRequest(url, {header: header, body: JSON.stringify(body)})
+            putRequest(anUrl, {header: header, body: JSON.stringify(body)})
             .then(function(resultNoOrg) {
                 t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
                 callback();
@@ -233,7 +243,7 @@ test('Slack Broker - Test PUT instance', function (t) {
 	    },
 	    function(callback) {
             body.service_credentials = tiamCredentials.service_credentials;
-            putRequest(url, {header: header, body: JSON.stringify(body)})
+            putRequest(anUrl, {header: header, body: JSON.stringify(body)})
             .then(function(resultNoOrg) {
                 t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
                 callback();
@@ -246,7 +256,7 @@ test('Slack Broker - Test PUT instance', function (t) {
             	channel_name: slack_channel.name.replace("bot", "bis"),
             	//channel_topic: slack_channel.topic
             }
-            putRequest(url, {header: header, body: JSON.stringify(body)})
+            putRequest(anUrl, {header: header, body: JSON.stringify(body)})
             .then(function(results) {
                 t.equal(results.statusCode, 200, 'did the put instance call succeed?');
                 t.ok(results.body.instance_id, 'did the put instance call return an instance_id?');
