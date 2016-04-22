@@ -95,6 +95,11 @@ function validateConfSync() {
 
 function configureAppSync(db) {
 	var logPrefix = "[" + logBasePath + ".configureAppSync] ";
+	
+	// check if log level has not been overridden
+	var level = nconf.get("LOG4J_LEVEL");
+	if (level && level.length > 0)
+		logger.setLevel(level);
 		
 	app
 	// If a request comes in that appears to be http, reject it.
