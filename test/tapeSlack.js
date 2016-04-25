@@ -487,7 +487,7 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
                     		t.fail("Problem while retrieving Slack message: No message found");                        		
                     	} else {
                     		var expectedUserName = "Toolchain '" + event.payload.toolchain_guid +"'";
-                    		if (result.length == 1 && String(result[0].username).startsWith("Toolchain")) {
+                    		if (result.length == 1 && result[0].username.indexOf("Toolchain") == 0) {
                         		t.pass('did the slack message been created successfully for event ' + index + '?');                        		                    			
                     		} else {
                         		t.fail('did the slack message been created successfully for event ' + index + '?');                        		                    			
