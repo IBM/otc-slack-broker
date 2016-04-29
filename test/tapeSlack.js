@@ -56,7 +56,7 @@ var nockMode = (process.env.NOCK_MODE!==undefined)?JSON.parse(process.env.NOCK_M
 
 // To be fully operational, recordMode is only valid if nockMode is enabled
 // in order to capture all the server side request to mock/nock
-var nockRecordMode = true && nockMode;
+var nockRecordMode = false && nockMode;
 var server;
 
 test('Slack Broker - Setup', function(t) {
