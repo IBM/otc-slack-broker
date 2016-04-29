@@ -23,9 +23,8 @@ nconf.env("__");
 if (process.env.NODE_ENV) {
     nconf.file('node_env', 'config/' + process.env.NODE_ENV + '.json');
 }
-nconf.file('test', path.join(__dirname, '..', 'config', 'dev.json'));
 
-// Load in the user information.
+// Load in the test information.
 nconf.file('testUtils', path.join(__dirname, '..', 'config', 'testUtils.json'));
 
 var defaultHeaders = {
@@ -221,7 +220,7 @@ test("Slack Broker - Create Test TIAM Creds", function(t) {
 });
 
 test('Slack Broker - Test PUT instance', function (t) {
-    t.plan(6);
+    t.plan(8);
 
     var anUrl = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {};
@@ -262,6 +261,9 @@ test('Slack Broker - Test PUT instance', function (t) {
                 t.equal(results.statusCode, 200, 'did the put instance call succeed?');
                 t.ok(results.body.instance_id, 'did the put instance call return an instance_id?');
                 slack_channel.id = results.body.instance_id;
+                // Ensure correctness of results
+                t.equal(results.body.parameters.label, "#" + body.parameters.channel_name, 'did the put instance returned the appropriate label ?');
+                t.equal(results.body.dashboard_url, nconf.get("slack-domain") + "/messages/" + body.parameters.channel_name, 'did the put instance returned the appropriate dashboard_url ?');
                 callback();
             });
 	    },
@@ -306,7 +308,7 @@ test('Slack Broker - Test PUT update instance w/o parameters', function (t) {
 });
 
 test('Slack Broker - Test PATCH update instance with channel_name', function (t) {
-    t.plan(3);
+    t.plan(5);
     
     // Sleep 3s to not overload Slack - Workaround but may lead to trouble in prod ?
     sleep(3);
@@ -325,9 +327,14 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
         	//t.comment(JSON.stringify(resultFromPatch));
             t.equal(resultFromPatch.statusCode, 200, 'did the patch instance call succeed?');
             //t.comment(JSON.stringify(slack_channel));
-            t.notEqual(resultFromPatch.body.instance_id, slack_channel.id, 'did the put instance call return the appropriate channel id?');
+            t.notEqual(resultFromPatch.body.instance_id, slack_channel.id, 'did the patch instance call return the appropriate channel id?');
             slack_channel.id_bis = slack_channel.id; 
             slack_channel.id = resultFromPatch.body.instance_id;
+            
+            // Ensure correctness of results
+            t.equal(resultFromPatch.body.parameters.label, "#" + body.parameters.channel_name, 'did the patch instance returned the appropriate label ?');
+            t.equal(resultFromPatch.body.dashboard_url, nconf.get("slack-domain") + "/messages/" + body.parameters.channel_name, 'did the patch instance returned the appropriate dashboard_url ?');
+            
             // Ensure Slack Channel has been created
             slack.api("channels.info", {channel: slack_channel.id}, function(err, response) {
             	if (err) {
@@ -422,7 +429,8 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
 	var message_store_pipeline_event = require("./data/event_lms_pipeline_stage_started");
 	message_store_pipeline_event.toolchain_id = mockToolchainId;
 	message_store_pipeline_event.instance_id = mockServiceInstanceId;
-	
+	message_store_pipeline_event.payload.pipeline.id = "a_pipeline_id";		
+		
 	var basicHeader = {Authorization: "Basic " + tiamCredentials.target_credentials};
     postRequest(messagingEndpoint, {header: basicHeader, body: JSON.stringify(message_store_pipeline_event)})
     .then(function(resultFromPost) {
@@ -435,7 +443,8 @@ test('Slack Broker - Test Pipeline Event arriving like Messaging Store', functio
         		//t.comment(JSON.stringify(result));
         		// inspect the Slack messages (set purpose, topic message can have been mixed with the pipeline ones here)
         		var expectedUserName = "Pipeline '" + message_store_pipeline_event.payload.pipeline.id +"'";
-        		t.notEqual(_.findWhere(result, {username: expectedUserName}), undefined, 'has the slack message been created successfully ?');
+        		var message = _.findWhere(result, {username: expectedUserName}); 
+        		t.notEqual(message, undefined, 'has the slack message been created successfully ?');
         	}
         });
     });
@@ -486,8 +495,22 @@ test('Slack Broker - Test Toolchain Lifecycle Events', function (t) {
                     	if (!result) {
                     		t.fail("Problem while retrieving Slack message: No message found");                        		
                     	} else {
-                    		var expectedUserName = "Toolchain '" + event.payload.toolchain_guid +"'";
-                    		if (result.length == 1 && result[0].username.indexOf("Toolchain") == 0) {
+                    		// If nock, we can expect a dedicated name and verify the structure
+                    		//var expectedUserName = "Toolchain '" + event.payload.toolchain_guid +"'";
+                    		// Event is from toolchain
+                    		var isMessageOK = result.length == 1 && result[0].username.indexOf("Toolchain") == 0;
+                    		// result text content should include: toolchainid, user_name, and, except for unbind, service state and dashboard_url
+                    		isMessageOK = isMessageOK && result[0].text.indexOf(mockToolchainId) >= 0;
+                    		t.comment("toolchainId presence:" + isMessageOK);
+                    		isMessageOK = isMessageOK && result[0].text.indexOf(event.payload.user_info.user_name) >= 0;
+                    		t.comment("username presence:" + isMessageOK);
+                    		if (event.payload.event != "unbind") {
+                        		isMessageOK = isMessageOK && result[0].text.indexOf(event.payload.services[0].status.state) >= 0;                    			
+                        		t.comment("service state:" + isMessageOK);
+                        		isMessageOK = isMessageOK && result[0].text.indexOf(event.payload.services[0].dashboard_url) >= 0;
+                        		t.comment("dashboard url presence:" + isMessageOK + " - " + event.payload.services[0].dashboard_url);
+                    		}
+                    		if (isMessageOK) {
                         		t.pass('did the slack message been created successfully for event ' + index + '?');                        		                    			
                     		} else {
                         		t.fail('did the slack message been created successfully for event ' + index + '?');                        		                    			
