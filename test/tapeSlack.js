@@ -706,12 +706,20 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
                 .then(function(resultsFromBind) {
                     t.equal(resultsFromBind.statusCode, 204, 'did the bind instance to toolchain call succeed?');
 
-                    delRequest(url + '/toolchains/'+ mockToolchainId, {header: header})
+                    var user_info = {
+                        "user_id": "xxxx",
+                        "user_name": "xxxx@ca.ibm.com",
+                        "email": "xxxx@ca.ibm.com",
+                        "name": "XXXX XXXX",
+                        "tiam_id_token": "***"
+                    }
+
+                    delRequest(url + '/toolchains/'+ mockToolchainId, {header: header, body: JSON.stringify({user_info: user_info})})
                         .then(function(resultsFromDel) {
                             t.equal(resultsFromDel.statusCode, 204, 'did the unbind instance call succeed?');
                             
                         	/* Only to ensure that slack message for unbind has been posted */
-                        	sleep(10);
+                        	sleep(5);
                         	
                             getLastSlackMessages(function(err, result) {
                             	if (err) {
@@ -900,7 +908,7 @@ function delRequest(url, options) {
     var params = initializeRequestParams(url, options);
 
     var del = Q.nbind(request.del, this);
-    return del(params.uri, {headers: params.headers})
+    return del(params.uri, {body: params.body, headers: params.headers})
         .then(function(res) {
             if(res[1]) {
                    return {
