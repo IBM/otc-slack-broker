@@ -684,7 +684,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
 });
 
 test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
-    t.plan(5);
+    t.plan(6);
 
     var body = {
         'service_id': 'slack',
@@ -709,6 +709,27 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
                     delRequest(url + '/toolchains/'+ mockToolchainId, {header: header})
                         .then(function(resultsFromDel) {
                             t.equal(resultsFromDel.statusCode, 204, 'did the unbind instance call succeed?');
+                            
+                        	/* Only to ensure that slack message for unbind has been posted */
+                        	sleep(10);
+                        	
+                            getLastSlackMessages(function(err, result) {
+                            	if (err) {
+                            		t.fail("Error while retrieving Slack message:" + err);
+                            	} else {
+                            		var isMessageOK = result.length == 1 && result[0].username.indexOf("Toolchain") == 0;
+                            		// result text content should include: toolchainid, unbound, channel_name
+                            		isMessageOK = isMessageOK && result[0].text.indexOf(mockToolchainId) >= 0;
+                            		isMessageOK = isMessageOK && result[0].text.indexOf("unbound") >= 0;
+                            		isMessageOK = isMessageOK && result[0].text.indexOf(slack_channel.name) >= 0;
+                            		if (isMessageOK) {
+                            			t.pass("was slack message for slack service unbind found");
+                            		} else {
+                            			t.fail("Slack message for slack service unbound failed")
+                            		}
+                            	}
+                            });
+                            
 
                             delRequest(url, {header: header})
                                 .then(function(resultsFromDel) {
@@ -772,6 +793,7 @@ test('Slack Broker - Test GET version', function (t) {
 
 
 test('Slack Broker - Archive Test Slack Channel', function(t) {
+	
 	// This is only to have a kind of cleanup
 	t.plan(2);
     slack.api("channels.archive", {channel: slack_channel.id}, function(err, response) {
@@ -793,6 +815,7 @@ test('Slack Broker - Archive Test Slack Channel', function(t) {
     	}
     });                            
 });
+
 
 test('Slack Broker - Teardown', function(t) {
 	if (nockMode) {
