@@ -25,6 +25,7 @@ LOCAL USAGE
         Provide values for TIAM* properties. Contact Simon H for Stage1 values.
         Update services:* with the URLs according to your environment (only services:slack is mandatory)
 
+
     # Tell the broker to use your local config
     export NODE_ENV=local-dev
     
