@@ -6,7 +6,8 @@
 	"services": {
 		"slack_api": "https://slack.com/api",
 		"otc_api": "http://localhost:3400/api/v1",
-		"otc_ui": "http://localhost:3100/devops"
+		"otc_ui": "http://localhost:3100/devops",
+		"otc_webhook-manager" : "http://localhost:3250"
 	},
     "icons": {
         "github": "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png",

@@ -12,10 +12,6 @@
 			"name": "service_instances",
 			"description": "Endpoints for fetching information about a service instance."
 		},
-        {
-            "name": "messaging",
-            "description": "Endpoints for message/event notification."
-        },
 		{
 			"name": "monitoring",
 			"description": "Endpoints for monitoring. Note: The base URL for these endpoints are /."
@@ -56,9 +52,11 @@
 					{
 						"name": "Authorization",
 						"in": "header",
-						"description": "Broker Basic Credentials",
-						"type": "string"
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
 					}
+					
 				],
 				"responses": {
 					"200": {
@@ -79,7 +77,12 @@
 					"500": {
 						"description": "Returned when error occurs while responding to the request."
 					}
-				}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
 			},
 			"delete": {
 				"tags": [
@@ -99,12 +102,13 @@
 						"type": "string",
 						"required": true
 					},
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "description": "Broker Basic Credentials",
-                        "type": "string"
-                    }
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
+					}
 				],
 				"responses": {
 					"204": {
@@ -125,61 +129,6 @@
 						"api_key": []
 					}
 				]
-			},
-			"patch": {
-                "tags": [
-                    "service_instances"
-                ],
-                "summary": "Patch a service instance",
-                "description": "Returns information about the patched service instance.",
-                "operationId": "patchServiceInstance",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "sid",
-                        "in": "path",
-                        "description": "The API generated unique id of a service instance",
-                        "type": "string",
-                        "required": true
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Patched service instance details",
-                        "required": false,
-                        "schema": {
-                          "$ref": "#/definitions/patchServiceInstance"
-                        }
-                    },
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "description": "Broker Basic Credentials",
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful request",
-                        "schema": {
-                            "$ref": "#/definitions/patchServiceInstanceResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Returned when the request parameters are invalid."
-                    },
-                    "401": {
-                        "description": "Returned when a user is not authenticated with an auth header."
-                    },
-                    "403": {
-                        "description": "Returned when a user makes a request to something they are not entitled to."
-                    },
-                    "500": {
-                        "description": "Returned when error occurs while responding to the request."
-                    }
-                }
 			}
 		},
 		"/service_instances/{sid}/toolchains": {
@@ -201,12 +150,13 @@
 						"type": "string",
 						"required": true
 					},
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "description": "Broker Basic Credentials",
-                        "type": "string"
-                    }
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
+					}
 				],
 				"responses": {
 					"204": {
@@ -252,12 +202,13 @@
 						"type": "string",
 						"required": true
 					},
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "description": "Broker Basic Credentials",
-                        "type": "string"
-                    }
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
+					}
 				],
 				"responses": {
 					"204": {
@@ -304,12 +255,13 @@
 						"type": "string",
 						"required": true
 					},
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "description": "Broker Basic Credentials",
-                        "type": "string"
-                    }
+					{
+						"name": "Authorization",
+						"in": "header",
+						"description": "Bearer authorization token, e.g. Auhtorization: Bearer token",
+						"type": "string",
+						"required": false
+					}
 				],
 				"responses": {
 					"204": {
@@ -351,7 +303,12 @@
 			              "$ref":"#/definitions/getVersion"
 			            }
 					}
-				}
+				},
+				"security": [
+					{
+						"api_key": []
+					}
+				]
 			}
 		},
 		"/status": {
@@ -371,51 +328,14 @@
                     }
                 }
             }
-        },
-        "/messaging/accept": {
-            "post": {
-                "tags": [
-                    "messaging"
-                ],
-                "summary": "Endpoint for incoming notification/message/events",
-                "description": "Endpoint for incoming message/event notification (typically used by Lifecycle Message Store - LMS).",
-                "operationId": "acceptEvent",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Event Payload",
-                        "schema": {
-                          "$ref": "#/definitions/postMessagingAccept"
-                        }
-                    },
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "description": "Toolchain Basic Credentials",
-                        "type": "string"
-                    }                
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful request"
-                    },
-                    "401": {
-                        "description": "Returned when a user is not authenticated with an auth header."
-                    },
-                    "403": {
-                        "description": "Returned when a user makes a request to something they are not entitled to."
-                    },
-                    "500": {
-                        "description": "Returned when error occurs while responding to the request."
-                    }
-                }
-                
-            }
         }
+	},
+	"securityDefinitions": {
+		"api_key": {
+			"type": "apiKey",
+			"name": "Authorization",
+			"in": "header"
+		}
 	},
 	"definitions": {
 		"createOrUpdateServiceInstance": {
@@ -423,65 +343,29 @@
 	  		"description": "Body structure for creating or updating a service instance.",
 	    	"properties": {
 				"parameters": {
-					"description": "JSON data providing Slack context  Note: To use a existing channel, you can either set channel_id attribute instead or channel_name with the encoded id or channel name. For a new channel to create, the channel_name needs to be set (and channel_topic attribute). (ie \"channel_id=\"C0J8MUXSA\")",
+					"description": "JSON data providing Slack context  Note: To use a existing channel, either set channel_id attribute instead or channel_name with the encoded id or channel name. For a new channel to create, the channel_name needs to be set (and channel_topic attribute). (ie \"channel_id=\"C0J8MUXSA\")",
 					"type": "string",
 				    "example": {
 				    	"api_token": "xoxp-13948444357-13953293954-13959136117-xxxxxxx",
 				    	"channel_name": "Channel Toolchain 1",
 				    	"channel_topic": "The topic for channel dedicated to toolchain 1"
-				    }
+				    },
+				    "required": true
 				},
 				"service_id": {
 					"description": "The unique id of the service that an instance is being created from",
 					"type": "string",
-					"example": "slack"
+					"example": "slack",
+					"required": true
 				},
 				"organization_guid": {
 					"description": "The organization the service instance is associated with",
 					"type": "string",
-					"example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e"
-				},
-                "service_credentials": {
-                    "description": "The service credentials for authenticating with TIAM",
-                    "type": "string"
-                }
-			},
-            "required": [
-                "service_id", "organization_guid", "service_credentials", "parameters"
-            ]
+					"example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e",
+					"required": true
+				}
+			}
 	    },
-        "patchServiceInstance": {
-            "id": "Patch a service instance",
-            "description": "Body structure for patching a service instance.",
-            "properties": {
-                "parameters": {
-                    "description": "JSON data providing Slack context  Note: To use a existing channel, you can either set channel_id attribute instead or channel_name with the encoded id or channel name. For a new channel to create, the channel_name needs to be set (and channel_topic attribute). (ie \"channel_id=\"C0J8MUXSA\")",
-                    "type": "string",
-                    "example": {
-                        "api_token": "xoxp-13948444357-13953293954-13959136117-xxxxxxx",
-                        "channel_name": "Channel Toolchain 1",
-                        "channel_topic": "The topic for channel dedicated to toolchain 1"
-                    }
-                },
-                "service_id": {
-                    "description": "The unique id of the service that an instance is being created from",
-                    "type": "string",
-                    "example": "slack"
-                },
-                "organization_guid": {
-                    "description": "The organization the service instance is associated with",
-                    "type": "string",
-                    "example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e"
-                },
-                "service_credentials": {
-                    "description": "The service credentials for authenticating with TIAM",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "service_id", "organization_guid", "service_credentials", "parameters"
-            ]
-        },
 	    "getVersion": {
 	  	  "description": "Response structure for GET version",
 	        "properties": {
@@ -505,75 +389,21 @@
 					"example": "https://cloudplatform.slack.com/messages/channel-toolchain-1"
 				},
 				"parameters": {
-					"description": "Arbitraty JSON data for service instance providing Slack context and label",
+					"description": "JSON data providing Slack context  Note: To use a existing channel, set channel_id attribute instead of channel_name and channel_topic",
 					"type": "string",
 					"example": "{'api_token': 'xoxp-13948444357-13953293954-13959136117-xxxxxxx','channel_name': 'channel-toolchain-1', 'label': '# channel-toolchain-1'}"
 				},
 				"organization_guid": {
 					"description": "The organization the service instance is associated with",
 					"type": "string",
-					"example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e"
+					"example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e",
+					"required": false
 				}
 			},
 			"required": [
-				"instance_id", "dashboard_url", "parameters", "organization_guid"
+				"instance_id", "dashboard_url"
 			]
-		},
-		"patchServiceInstanceResponse": {
-            "properties": {
-                "instance_id": {
-                    "description": "The created or updated service instance",
-                    "type": "string",
-                    "example": "C0JB1M6M9"
-                },
-                "dashboard_url": {
-                    "description": "The URL of a user-facing user interface for this instance of a service",
-                    "type": "string",
-                    "example": "https://cloudplatform.slack.com/messages/channel-toolchain-1"
-                },
-                "parameters": {
-                    "description": "Arbitraty JSON data for service instance providing Slack context and label",
-                    "type": "string",
-                    "example": "{'api_token': 'xoxp-13948444357-13953293954-13959136117-xxxxxxx','channel_name': 'channel-toolchain-1', 'label': '# channel-toolchain-1'}"
-                },
-                "organization_guid": {
-                    "description": "The organization the service instance is associated with",
-                    "type": "string",
-                    "example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e"
-                }
-            },
-            "required": [
-                "instance_id", "dashboard_url", "parameters", "organization_guid"
-            ]
-        },        
-        "postMessagingAccept": {
-            "id": "Notification",
-            "description": "Body structure for a notification",
-            "properties": {
-                "service_id": {
-                    "description": "The unique id of the service that is the source of the message/event",
-                    "type": "string",
-                    "example": "pipeline"
-                },
-                "instance_id": {
-                    "description": "The Slack broker service instance is target of the event",
-                    "type": "string",
-                    "example": "d02d29f1-e7bb-4977-8a6f-26d7b7bb893e"
-                },
-                "toolchain_id": {
-                    "description": "The toolchain id that is related to the event and the toolchain for which the slack broker service instance is part of.",
-                    "type": "string",
-                    "example": "2e538e2e-b01a-45f1-8a4d-97311ce8ec0b"
-                },
-                "payload": {
-                    "description": "Event payload as JSON data",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "service_id", "instance_id", "toolchain_id", "payload"
-            ]
-        }
+		}
 	}
 }
 
