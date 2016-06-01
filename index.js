@@ -9,11 +9,15 @@
 "use strict";
 
 /******************* Begin Synchronous App Configuration **********************/
+//configure nconf and logging early
 var
  log4js = require("log4js"),
  nconf = require("nconf"),
  util = require('util')
 ;
+
+//Configuration for nconf
+populateNconfSync();
 
 //Configuration for logging
 log4js.configure("./config/log4js.json", {
@@ -23,9 +27,11 @@ log4js.configure("./config/log4js.json", {
 var logger = log4js.getLogger("otc-slack-broker"),
  	logBasePath = "index";
 
-//Configuration for nconf
-populateNconfSync();
-
+// check if log level has not been overridden
+var level = nconf.get("LOG4J_LEVEL");
+if (level && level.length > 0)
+	logger.setLevel(level);
+	
 /******************** End Synchronous App Configuration ***********************/
 
 /************* Begin Application Performance Monitoring config ****************/
