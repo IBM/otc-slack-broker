@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# Deploy a true instance of this application.
+
+# Append an optional ROUTE_SUFFIX to handle multiple copies of the app within
+# the same Cloud Foundry instance 
+ROUTE=${ROUTE}${ROUTE_SUFFIX}
+
+# Detect which of -blue or -green is the active app.
+activeApp=
+standbyApp=
+
+if cf app "$CF_APP-blue" | grep -q "urls:.* $ROUTE.$DOMAIN"; then 
+  activeApp=$CF_APP-blue
+  standbyApp=$CF_APP-green
+else
+  activeApp=$CF_APP-green
+  standbyApp=$CF_APP-blue
+fi  
+
+# Delete the standby app to get rid of any env vars we no longer use.
+cf delete "$standbyApp" -f
+
+# Create the app.
+#
+# Use NUM_INSTANCES envvar to override the number of instances.  Otherwise 1 will be used.
+cf push "$standbyApp" -i "${NUM_INSTANCES:-1}" -m "${MEMORY:-1G}" --no-route --no-start || exit 1
+
+# Copy all envvars with the prefix app_ or both_ to the app
+# we just deployed.
+#
+env | while IFS='=' read var value; do
+  case "$var" in
+    app_*)
+      cf set-env "$standbyApp" "${var#app_}" "$value" || exit 1
+      ;;
+    both_*)
+      cf set-env "$standbyApp" "${var#both_}" "$value" || exit 1
+      ;;
+    *)
+      ;;
+  esac
+done
+
+# Set the build version info for the /version endpoint.
+if [ -f ".pipeline_build_id" ]; then
+  cf set-env "$standbyApp" BUILD_NUMBER "$(<.pipeline_build_id)" || exit 1
+fi
+
+# Actually start the app.
+# If anything happens, explicitly stop it and unmap the new route.
+if ! cf restart "$standbyApp"; then
+  cf stop "$standbyApp"
+  exit 1
+fi 
+
+# Test the app by assigning a temporary route
+testRoute=$ROUTE-$(date +%s)
+if ! cf map-route "$standbyApp" "$DOMAIN" -n "$testRoute"; then
+   echo "Could not map a temporary route to the new app." >&2
+   cf stop "$standbyApp"
+   exit 1
+fi
+
+# Fetch from it's /status route; displaying the conversation, but looking for
+# a 200 response code.
+#
+# -s: Disable the status bar.
+# -v: Display the entire conversation.
+# 2>&1: The convo goes to stderr by default.
+# tee /dev/stderr: Copy the output to stderr so we see it in the pipeline log.
+# grep: Look for HTTP 200
+#
+curl -s -v "https://$testRoute.$DOMAIN/status" 2>&1 | \
+  tee /dev/stderr | \
+  grep -q 'HTTP/.*200 OK'
+
+curlStatus=$?
+
+# Don't need the testing route anymore.
+cf delete-route -f "$DOMAIN" -n "$testRoute" || exit 1
+
+# But if the curl failed, we should back outta here.
+if [[ $curlStatus -ne 0 ]]; then
+   echo "Even though cf claims the app is running, cannot access /" >&2
+   cf stop "$standbyApp"
+   exit 1
+fi
+
+# Map traffic into the configured hostname to the app.
+cf map-route "$standbyApp" "$DOMAIN" -n "$ROUTE" || exit 1
+
+# Unmap traffic into the configured hostname to the active app.
+if cf app "$activeApp"; then
+  cf unmap-route "$activeApp" "$DOMAIN" -n "$ROUTE"
+  cf stop "$activeApp"
+fi
+
+# Notify New Relic about new deployment
+
+if [[ "$app_NEW_RELIC_LICENSE_KEY" && "$app_NEW_RELIC_APP_NAME" ]]; then
+  if [ -f ".pipeline_build_id" ]; then
+    curl -H "x-api-key:$app_NEW_RELIC_LICENSE_KEY" -d "deployment[app_name]=$app_NEW_RELIC_APP_NAME" -d "deployment[description]=Build $(<.pipeline_build_id)" https://api.newrelic.com/deployments.xml
+  else
+    curl -H "x-api-key:$app_NEW_RELIC_LICENSE_KEY" -d "deployment[app_name]=$app_NEW_RELIC_APP_NAME" https://api.newrelic.com/deployments.xml
+  fi
+fi
+
+# vim:shiftwidth=2:softtabstop=2:expandtab

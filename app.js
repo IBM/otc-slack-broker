@@ -70,15 +70,7 @@ exports.server = app;
 https.globalAgent.keepAlive = true;
 
 function validateConfSync() {
-	/* Make sure that important bits of VCAP_SERVICES and VCAP_APPLICATION are defined. */
-	if (!nconf.get("_vcap_application:application_uris:0")) {
-		util.log(
-			"Could not figure out the app uri. Either run this on Bluemix or point a config file containing at least the following: \n\n" +
-			JSON.stringify({ _vcap_application: { application_uris: [ "hostname.com" ] } })
-		);
-		process.exit(1);
-	}
-
+	/* Make sure that important bits of VCAP_SERVICES are defined. */
 	if (!nconf.get("_vcap_services:cloudantNoSQLDB:0:credentials:url")) {
 		util.log(
 			"Could not figure out the database server url. Either run this on Bluemix or point a config file containing at least the following: \n\n" +
