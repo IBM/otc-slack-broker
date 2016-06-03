@@ -15,9 +15,6 @@
         "pipeline": "http://blade-resources.mybluemix.net/pipeline.png",
         "bluemix": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png"
     },
-	"_vcap_application": {
-		"application_uris":["localhost:3900"]
-	},
 	"_vcap_services": {
 		"cloudantNoSQLDB": [{
 			"credentials": {
