@@ -1,8 +1,6 @@
 {
-	"PROTOCOL": "http",
 	"PORT": "3900",
 	"url": "http://localhost:3900",
-	"schemes": "http",
 	"services": {
 		"slack_api": "https://slack.com/api",
 		"otc_api": "http://localhost:3400/api/v1",
@@ -11,8 +9,7 @@
     "icons": {
         "github": "https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png",
         "toolchain": "http://blade-resources.mybluemix.net/toolchain-32.png",
-        "pipeline": "http://blade-resources.mybluemix.net/pipeline.png",
-        "bluemix": "https://hub.jazz.net/api/v1/composition/graphics/header/bluemix-logo.png"
+        "pipeline": "http://blade-resources.mybluemix.net/pipeline.png"
     },
 	"_vcap_services": {
 		"cloudantNoSQLDB": [{
@@ -24,6 +21,5 @@
 	"TIAM_URL": "",
 	"TIAM_CLIENT_ID": "",
 	"OTC_API_BROKER_SECRET": "",
-	"LOG4J_LEVEL": ""
-	
+	"LOG4J_LEVEL": ""	
 }
