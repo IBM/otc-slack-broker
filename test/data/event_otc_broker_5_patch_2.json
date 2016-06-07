@@ -32,13 +32,13 @@
 				"name": "test"
 			}
 		}],
-		"user_info": {
-			"user_id": "fa0c65b2-0f37-4c6f-8c38-0c64509a21ad",
-			"user_name": "jaunin.b@fr.ibm.com",
-			"email": "jaunin.b@fr.ibm.com",
-			"name": "jaunin.b@fr.ibm.com jaunin.b@fr.ibm.com",
-			"tiam_id_token": ""
-		},
+        "user_info": {
+            "user_id": "xxx",
+            "user_name": "xxx@fr.ibm.com",
+            "email": "xxx@fr.ibm.com",
+            "name": "xxx xxx",
+            "tiam_id_token": ""
+        },
 		"token": "",
 		"tool": "toolchain"
 	}

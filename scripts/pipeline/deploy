@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright (c) IBM Corporation 2016. All Rights Reserved.
+
 # Deploy a true instance of this application.
 
 # Append an optional ROUTE_SUFFIX to handle multiple copies of the app within
