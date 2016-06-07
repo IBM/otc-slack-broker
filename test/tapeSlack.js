@@ -48,7 +48,7 @@ slack_channel.name += pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getS
 
 var event_endpoints = {};
 
-var slack = new Slack(nconf.get("slack-token"));
+var slack = new Slack(nconf.get("slack_token"));
 
 // Nock related 
 var nock;
@@ -191,7 +191,7 @@ test('Slack Broker - Test Authentication', function (t) {
 test("Slack Broker - Create Test TIAM Creds", function(t) {
 	t.plan(3);
 	var tiamHeader = {};
-	tiamHeader.Authorization = "Basic " + new Buffer(nconf.get("test-tiam-id") + ":" + nconf.get("test-tiam-secret")).toString('base64');
+	tiamHeader.Authorization = "Basic " + new Buffer(nconf.get("test_tiam_id") + ":" + nconf.get("test_tiam_secret")).toString('base64');
 	// Create a service credentials
 	var anUrl = nconf.get("TIAM_URL") + '/service/manage/slack/' + mockServiceInstanceId;
 	//t.comment(url);
@@ -252,7 +252,7 @@ test('Slack Broker - Test PUT instance', function (t) {
 	    function(callback) {
             body.organization_guid = organization_guid;
             body.parameters = {
-            	api_token: nconf.get("slack-token"),
+            	api_token: nconf.get("slack_token"),
             	channel_name: slack_channel.name.replace("bot", "bis"),
             	//channel_topic: slack_channel.topic
             }
@@ -263,7 +263,7 @@ test('Slack Broker - Test PUT instance', function (t) {
                 slack_channel.id = results.body.instance_id;
                 // Ensure correctness of results
                 t.equal(results.body.parameters.label, "#" + body.parameters.channel_name, 'did the put instance returned the appropriate label ?');
-                t.equal(results.body.dashboard_url, nconf.get("slack-domain") + "/messages/" + body.parameters.channel_name, 'did the put instance returned the appropriate dashboard_url ?');
+                t.equal(results.body.dashboard_url, nconf.get("slack_domain") + "/messages/" + body.parameters.channel_name, 'did the put instance returned the appropriate dashboard_url ?');
                 callback();
             });
 	    },
@@ -333,7 +333,7 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
             
             // Ensure correctness of results
             t.equal(resultFromPatch.body.parameters.label, "#" + body.parameters.channel_name, 'did the patch instance returned the appropriate label ?');
-            t.equal(resultFromPatch.body.dashboard_url, nconf.get("slack-domain") + "/messages/" + body.parameters.channel_name, 'did the patch instance returned the appropriate dashboard_url ?');
+            t.equal(resultFromPatch.body.dashboard_url, nconf.get("slack_domain") + "/messages/" + body.parameters.channel_name, 'did the patch instance returned the appropriate dashboard_url ?');
             
             // Ensure Slack Channel has been created
             slack.api("channels.info", {channel: slack_channel.id}, function(err, response) {
@@ -354,7 +354,7 @@ test('Slack Broker - Test PATCH update instance with wrong api_key', function (t
     var body = {
         'service_id': 'slack',
         'parameters' : {
-        	api_token: "wrong" + nconf.get("slack-token")
+        	api_token: "wrong" + nconf.get("slack_token")
         }
     };
 
@@ -374,7 +374,7 @@ test('Slack Broker - Test PATCH unknown instance', function (t) {
     var body = {
         'service_id': 'slack',
         'parameters' : {
-        	api_token: nconf.get("slack-token")
+        	api_token: nconf.get("slack_token")
         }
     };
 
@@ -613,7 +613,7 @@ test('Slack Broker - Test PUT update instance with channel_id (archived channel)
 		            'organization_guid': organization_guid,
 		            'service_credentials': tiamCredentials.service_credentials,
 		            'parameters' : {
-		            	api_token: nconf.get("slack-token"),
+		            	api_token: nconf.get("slack_token"),
 		            	channel_id: slack_channel.id_bis        	
 		            }
 		        };
@@ -691,7 +691,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
         'organization_guid': organization_guid,
         'service_credentials': tiamCredentials.service_credentials,
         'parameters' : {
-        	api_token: nconf.get("slack-token"),
+        	api_token: nconf.get("slack_token"),
         	channel_id: slack_channel.id        	
         }
     };
@@ -751,7 +751,7 @@ test('Slack Broker - Test DELETE unbind instance from toolchain', function (t) {
 test("Slack Broker - Delete Test TIAM Creds", function(t) {
 	t.plan(2);
 	var tiamHeader = {};
-	tiamHeader.Authorization = "Basic " + new Buffer(nconf.get("test-tiam-id") + ":" + nconf.get("test-tiam-secret")).toString('base64');
+	tiamHeader.Authorization = "Basic " + new Buffer(nconf.get("test_tiam_id") + ":" + nconf.get("test_tiam_secret")).toString('base64');
 	
     // Delete a toolchain credentials
     var url = nconf.get("TIAM_URL") + '/service/manage/slack/' + mockServiceInstanceId + "/" + mockToolchainId;

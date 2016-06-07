@@ -1,8 +1,8 @@
 {
-    "slack-token-readme": "slack token is for idstest.slack.com, slack user email: jaunin.b@fr.ibm.com , password: zNbPbT",
-    "slack-domain": "https://idstest.slack.com",
-    "slack-token":"xoxp-23743188883-23747253174-23746641776-99f4e8c68a",
-    "test-tiam-readme": "itam id and tiam secret obtained from simon helsen to have fake toolchain and service creds",
-    "test-tiam-id" : "test",
-    "test-tiam-secret" : "72heYpy2weRih8I3KTxdMVOy90bBpQB0WDY3fH2IixOaAtwnRU"
+    "slack_token_readme": "slack token is for idstest.slack.com, slack user email: jaunin.b@fr.ibm.com , password: zNbPbT",
+    "slack_domain": "https://idstest.slack.com",
+    "slack_token":"xoxp-23743188883-23747253174-23746641776-99f4e8c68a",
+    "test_tiam_readme": "itam id and tiam secret obtained from simon helsen to have fake toolchain and service creds",
+    "test_tiam_id" : "test",
+    "test_tiam_secret" : "72heYpy2weRih8I3KTxdMVOy90bBpQB0WDY3fH2IixOaAtwnRU"
 }

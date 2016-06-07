@@ -1,0 +1,6 @@
+{
+    "slack_domain": "https://idstest.slack.com",
+    "slack_token":"...",
+    "test_tiam_id" : "...",
+    "test_tiam_secret" : "..."
+}
