@@ -14,7 +14,7 @@
             }
         },
         {
-		    "type": "node-log4js-syslog-appender",
+		    "type": "log4js-syslog-appender",
 			"options": {}
 		}
     ]
