@@ -18,7 +18,7 @@
     "node-log4js-syslog-appender": "git+https://github.ibm.com/org-ids/node-log4js-syslog-appender#v0.1.7",
     "request": "2.67.0",
     "slack-node": "^0.1.3",
-    "swagger-ui-middleware": "git+https://github.ibm.com/org-ids/node-swagger-ui-middleware#v0.0.1",
+    "swagger-ui-middleware": "git+https://github.ibm.com/org-ids/node-swagger-ui-middleware",
     "underscore": "1.8.2"
   },
   "devDependencies": {
