@@ -2,14 +2,14 @@
   "name": "otc-slack-broker",
   "dependencies": {
     "@org-ids/log4js-logmet-appender": {
-      "version": "0.1.8",
-      "from": "git+https://github.ibm.com/org-ids/node-log4js-logmet-appender#v0.1.9",
-      "resolved": "git+https://github.ibm.com/org-ids/node-log4js-logmet-appender#220c3ab519923362295e78c4aabc4905edeee393",
+      "version": "0.1.10",
+      "from": "git+https://github.ibm.com/org-ids/node-log4js-logmet-appender#v0.1.10",
+      "resolved": "git+https://github.ibm.com/org-ids/node-log4js-logmet-appender#02068ca4818cc51e967c27206ef20952b91c427a",
       "dependencies": {
         "@logmet-clients/logmet-client": {
-          "version": "0.0.7",
-          "from": "git+https://github.ibm.com/LogmetClients/logmet-client-njs#v0.0.7",
-          "resolved": "git+https://github.ibm.com/LogmetClients/logmet-client-njs#66783140f0491c0f6615ef6e49cc58460b9d6077"
+          "version": "0.0.8",
+          "from": "git+https://github.ibm.com/LogmetClients/logmet-client-njs#v0.0.8",
+          "resolved": "git+https://github.ibm.com/LogmetClients/logmet-client-njs#d828d09a5f9d236ee893a11f03c15406a5807794"
         },
         "balanced-match": {
           "version": "0.4.1",

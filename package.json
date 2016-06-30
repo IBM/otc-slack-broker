@@ -9,7 +9,7 @@
     "npm": "3.8.0"
   },
   "dependencies": {
-    "@org-ids/log4js-logmet-appender": "git+https://github.ibm.com/org-ids/node-log4js-logmet-appender#v0.1.9",
+    "@org-ids/log4js-logmet-appender": "git+https://github.ibm.com/org-ids/node-log4js-logmet-appender#v0.1.10",
     "agentkeepalive": "2.0.3",
     "async": "1.5.0",
     "body-parser": "1.15.0",
