@@ -31,7 +31,8 @@ Local Usage
     # Edit config/local-dev.json and update the following:
     - Replace CLOUDANT_URL with your Cloudant URL:
         https://<cloudant id>:<cloudant pw>@<cloudant id>.cloudant.com
-    - Provide values for TIAM* properties
+    - Provide values for TIAM* properties:
+           Contact Simon H for Stage1 values.
     - Update services:
         Use the services and icons URLs according to your environment (services:* and icons:*)
 
@@ -45,9 +46,22 @@ Local Usage
     # Start the node app
     npm start
     
+    # Create a test configuration from the provided template 
+    cp config/testUtils.json.template config/testUtils.json
+
+    # Edit config/testUtils.json and update the following:
+    - slack_domain and slack_token (corresponding to the configuration for test user)
+    - test_tiam_id and test_tiam_secret (TIAM properties required to invoke the broker API)
+        
     # To run the tests, run:
     npm test
 
+Dependencies
+------------
+The Slack Broker has the following dependencies:
+- Cloudant
+- Slack
+- TIAM
 
 Logging
 -------
