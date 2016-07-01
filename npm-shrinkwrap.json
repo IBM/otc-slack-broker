@@ -31,10 +31,37 @@
           "from": "concat-map@0.0.1",
           "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
         },
+        "d": {
+          "version": "0.1.1",
+          "from": "d@>=0.1.1 <0.2.0",
+          "resolved": "https://registry.npmjs.org/d/-/d-0.1.1.tgz"
+        },
         "dtrace-provider": {
           "version": "0.6.0",
           "from": "dtrace-provider@>=0.6.0 <0.7.0",
           "resolved": "https://registry.npmjs.org/dtrace-provider/-/dtrace-provider-0.6.0.tgz"
+        },
+        "es5-ext": {
+          "version": "0.10.11",
+          "from": "es5-ext@>=0.10.11 <0.11.0",
+          "resolved": "https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.11.tgz",
+          "dependencies": {
+            "es6-symbol": {
+              "version": "3.0.2",
+              "from": "es6-symbol@>=3.0.2 <3.1.0",
+              "resolved": "https://registry.npmjs.org/es6-symbol/-/es6-symbol-3.0.2.tgz"
+            }
+          }
+        },
+        "es6-iterator": {
+          "version": "2.0.0",
+          "from": "es6-iterator@>=2.0.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/es6-iterator/-/es6-iterator-2.0.0.tgz"
+        },
+        "es6-symbol": {
+          "version": "3.1.0",
+          "from": "es6-symbol@>=3.1.0 <3.2.0",
+          "resolved": "http://173.192.225.82:8080/e/es6-symbol/_attachments/es6-symbol-3.1.0.tgz"
         },
         "glob": {
           "version": "6.0.4",
@@ -845,8 +872,8 @@
     },
     "log4js-syslog-appender": {
       "version": "0.2.0",
-      "from": "git+https://github.com/IBM/node-log4js-syslog-appender.git#v0.2.0",
-      "resolved": "git+https://github.com/IBM/node-log4js-syslog-appender.git#5c319f05ab1ab526120aaafac7e1cad4ed0ee7d1",
+      "from": "git+https://github.com/IBM/node-log4js-syslog-appender.git#v0.2.1",
+      "resolved": "git+https://github.com/IBM/node-log4js-syslog-appender.git#55f6152a93bfb2f5752b3c952b2d887fac744dd9",
       "dependencies": {
         "log4js": {
           "version": "0.6.37",
@@ -943,9 +970,9 @@
       "resolved": "https://registry.npmjs.org/nano/-/nano-6.1.3.tgz"
     },
     "nano-doc-updater": {
-      "version": "0.0.3",
-      "from": "git+https://github.com/IBM/node-nano-doc-updater.git#v0.0.1",
-      "resolved": "git+https://github.com/IBM/node-nano-doc-updater.git#edfe0f8c815998a1bf2269b74924d37ddb3a48e0"
+      "version": "0.0.1",
+      "from": "git+https://github.com/IBM/node-nano-doc-updater.git#v0.0.2",
+      "resolved": "git+https://github.com/IBM/node-nano-doc-updater.git#30d4ae77d902adb3bc1e0d9cda0c09a9dbac9dc6"
     },
     "nconf": {
       "version": "0.8.2",
@@ -1466,8 +1493,8 @@
     },
     "swagger-ui-middleware": {
       "version": "0.0.1",
-      "from": "git+https://github.com/IBM/node-swagger-ui-middleware.git#v1.1.0",
-      "resolved": "git+https://github.com/IBM/node-swagger-ui-middleware.git#d3398655671a9d4e36d6484712bdf638c11adafa"
+      "from": "git+https://github.com/IBM/node-swagger-ui-middleware.git#v1.1.1",
+      "resolved": "git+https://github.com/IBM/node-swagger-ui-middleware.git#ad4f09cfef1cd894ee9d7da71c4ee5a0a0f8db9e"
     },
     "tap-out": {
       "version": "1.4.2",
