@@ -1,21 +1,28 @@
 {
-    "levels": {
-        "otc-slack-broker": "INFO",
-        "request": "OFF"
-    },
-    "appenders": [
-        {
-            "type": "console",
-            "layout": {
-                "type": "pattern",
-                "pattern": "[%d] [%p] [%c] %m",
-                "tokens": {
-                }
-            }
-        },
-        {
-		    "type": "log4js-syslog-appender",
-			"options": {}
+	"levels": {
+		"otc-slack-broker": "INFO",
+		"request": "OFF"
+	},
+	"appenders": [
+		{
+			"type": "console",
+			"layout": {
+				"type": "pattern",
+				"pattern": "[%d] [%p] [%c] %m",
+				"tokens": {
+					}
+			}
+		},
+		{
+			"type": "log4js-syslog-appender",
+			"options": {
+			}
+		},
+		{
+			"type": "@org-ids/log4js-logmet-appender",
+			"options": {
+				"level": "INFO"
+			}
 		}
-    ]
+	]
 }
