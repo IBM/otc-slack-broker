@@ -869,7 +869,6 @@ test('Slack Broker - Teardown', function(t) {
 	    server.close(function(err) {
 	        t.notOk(err, 'did the server close?');
 	        t.end();
-	        process.exit();
 	    });
 
 	} else {
