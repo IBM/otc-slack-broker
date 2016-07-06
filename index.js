@@ -53,14 +53,14 @@ app.configureMiddleware(function(err) {
         util.log('Could not start server: ' + JSON.stringify(err));
     }
     else {
-        app.server.listen(nconf.get('PORT'), function(err) {
+        var httpServer = app.server.listen(nconf.get('PORT'), function(err) {
             util.log('Listening on port ' + nconf.get('PORT'));
         });
 
         // If SIGTERM is emitted gracefully shutdown
         process.on('SIGTERM', function () {
         	util.log('Exiting gracefully because of SIGTERM signal');
-        	app.server.close(function () {
+        	httpServer.close(function (err) {
         	    process.exit(0);
         	});
        });
