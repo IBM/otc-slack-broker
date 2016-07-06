@@ -60,12 +60,12 @@ app.configureMiddleware(function(err) {
         // If SIGTERM is emitted then gracefully shutdown
         // https://docs.cloudfoundry.org/devguide/deploy-apps/prepare-to-deploy.html#moving-apps
         process.on('SIGTERM', function () {
-        	util.log('Exiting gracefully because of SIGTERM signal');
+        	logger.warn('Exiting gracefully because of SIGTERM signal');
         	httpServer.close(function (err) {
-        		util.log("Server now closed");
-        	    process.exitCode = 0;
+        		util.log("Server now closed - Exit process");
+        	    process.exit(0);
         	});
-       });
+        });
     }
 });
 /**************************** Server listening ********************************/
