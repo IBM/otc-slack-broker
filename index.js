@@ -53,8 +53,19 @@ app.configureMiddleware(function(err) {
         util.log('Could not start server: ' + JSON.stringify(err));
     }
     else {
-        app.server.listen(nconf.get('PORT'));
-        util.log('Listening on port ' + nconf.get('PORT'));
+        var httpServer = app.server.listen(nconf.get('PORT'), function(err) {
+            util.log('Listening on port ' + nconf.get('PORT'));
+        });
+
+        // If SIGTERM is emitted then gracefully shutdown
+        // https://docs.cloudfoundry.org/devguide/deploy-apps/prepare-to-deploy.html#moving-apps
+        process.on('SIGTERM', function () {
+        	util.log('Exiting gracefully because of SIGTERM signal');
+        	httpServer.close(function (err) {
+        		util.log("Server now closed");
+        	    process.exitCode = 0;
+        	});
+       });
     }
 });
 /**************************** Server listening ********************************/
