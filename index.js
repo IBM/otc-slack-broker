@@ -60,9 +60,15 @@ app.configureMiddleware(function(err) {
         // If SIGTERM is emitted then gracefully shutdown
         // https://docs.cloudfoundry.org/devguide/deploy-apps/prepare-to-deploy.html#moving-apps
         process.on('SIGTERM', function () {
-        	logger.warn('Exiting gracefully because of SIGTERM signal');
+        	logger.warn('Exiting because of SIGTERM signal');
+        	
         	httpServer.close(function (err) {
+        		// No new connections will be accepted
+        		// however existing connections (because of keep-alive may continue)
+        		// https://github.com/nodejs/node/issues/2642
+        		// force an hard-stop
         		util.log("Server now closed - Exit process");
+        		//
         	    process.exit(0);
         	});
         });
