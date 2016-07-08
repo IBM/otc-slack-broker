@@ -8,6 +8,7 @@
 ###############################################################################
 applications:
 - name: OTC Slack Broker
+  buildpack: sdk-for-nodejs
   memory: 256M
   instances: 1
   host: otc-slack-broker
