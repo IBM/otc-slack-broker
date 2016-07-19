@@ -19,6 +19,8 @@ var
  nconf = require("nconf"),
  log4js = require("log4js"),
  path = require("path"),
+ request = require("request"),
+ status = require("./lib/middleware/status"),
  url = require("url"),
  util = require("util"),
  _ = require("underscore")
@@ -31,6 +33,8 @@ otcSlackBrokerSwaggerSpec = require(otcSlackBrokerSwaggerSpecFile);
 
 var logger = log4js.getLogger("otc-slack-broker"),
  	logBasePath = "index";
+
+const DB_NAME = "slack_broker";
 
 /* 
  * Method used to configure all the middleware before starting the server.
@@ -98,6 +102,16 @@ function validateConfSync() {
         }).join(", "));
 		process.exit(1);
     }	
+    
+    // Ensure slack URL is well formatted
+    var slack_url = nconf.get("services:slack_api");
+    if (slack_url) {
+    	// ensure final / is there
+    	if (slack_url.charAt(slack_url.length - 1) != '/') {
+    		slack_url += "/";
+    	    nconf.set("services:slack_api", slack_url);
+    	}
+    }
 	
 	/* Make sure that important bits of VCAP_SERVICES are defined. */
 	if (!nconf.get("_vcap_services:cloudantNoSQLDB:0:credentials:url")) {
@@ -129,9 +143,8 @@ function configureAppSync(db) {
 	}))
 	
 	.use(bodyParser.json())
-	.get("/status", function (req, res/*, next*/) {
-        return res.status(200).send("The Slack Broker is running.");
-    })
+	
+	.get("/status", status.getStatus)
 	
 	.get("/version", function (req, res/*, next*/) {
         return res.status(200).send({build: process.env.BUILD_NUMBER});
@@ -181,7 +194,6 @@ function configureAppSync(db) {
 
 function createDb(callback) {
 	var logPrefix = "[" + logBasePath + ".createDb] ";
-	var DB_NAME = "slack_broker";
 	var keepAliveAgent = new HttpsAgent({
 		maxSockets: 50,
 		maxKeepAliveRequests: 0,
