@@ -779,6 +779,7 @@ test('Slack Broker - Test GET status', function (t) {
     var url = nconf.get('url') + '/status';
     getRequest(url, {header: null})
         .then(function(results) {
+        	t.comment("/status :" + JSON.stringify(results));
             t.equal(results.statusCode, 200, 'did the get status call succeed?');
     });
 });
