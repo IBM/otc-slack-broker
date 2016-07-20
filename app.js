@@ -111,6 +111,9 @@ function validateConfSync() {
     		slack_url += "/";
     	    nconf.set("services:slack_api", slack_url);
     	}
+    } else {
+    	// set the default one
+	    nconf.set("services:slack_api", "https://slack.com/api/");    	
     }
 	
 	/* Make sure that important bits of VCAP_SERVICES are defined. */
