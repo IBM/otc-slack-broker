@@ -20,8 +20,6 @@ var
 
 nconf.env("__");
 
-nconf.overrides({});
-
 if (process.env.NODE_ENV) {
     nconf.file('node_env', 'config/' + process.env.NODE_ENV + '.json');
 }
