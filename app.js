@@ -109,11 +109,12 @@ function validateConfSync() {
     	// ensure final / is there
     	if (slack_url.charAt(slack_url.length - 1) != '/') {
     		slack_url += "/";
-    	    nconf.set("services:slack_api", slack_url);
+        	// use overrides as it may come from a readonly provider
+    	    nconf.overrides({services: { slack_api: slack_url}});
     	}
     } else {
-    	// set the default one
-	    nconf.set("services:slack_api", "https://slack.com/api/");    	
+    	// set the default one using overrides as it may come from a readonly provider
+	    nconf.overrides({services: {slack_api: "https://slack.com/api/"}});    	
     }
 	
 	/* Make sure that important bits of VCAP_SERVICES are defined. */
