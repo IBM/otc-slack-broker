@@ -832,7 +832,7 @@ test('Slack Broker - Teardown', function(t) {
 			// Nock Record related work
 			var nockCalls = nock.recorder.play();
 			
-			const fs = require('fs'); 
+			var fs = require('fs'); 
 			fs.writeFileSync(__dirname + '/nocks/allNocks.json', JSON.stringify(nockCalls));
 			
 			// Keep a single nock instance by removing the headers.date property and call uniq

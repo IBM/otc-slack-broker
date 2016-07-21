@@ -34,7 +34,7 @@ otcSlackBrokerSwaggerSpec = require(otcSlackBrokerSwaggerSpecFile);
 var logger = log4js.getLogger("otc-slack-broker"),
  	logBasePath = "index";
 
-const DB_NAME = "slack_broker";
+var DB_NAME = "slack_broker";
 
 /* 
  * Method used to configure all the middleware before starting the server.
