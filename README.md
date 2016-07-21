@@ -60,7 +60,7 @@ Dependencies
 ------------
 The Slack Broker has the following dependencies:
 - Cloudant
-- Slack
+- Slack (usage of [Slack Web API](https://api.slack.com/web) thru [slack-node](https://www.npmjs.com/package/slack-node) module) 
 - TIAM
 
 Logging
