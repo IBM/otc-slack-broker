@@ -849,14 +849,14 @@
       }
     },
     "log4js-qradar-syslog-appender": {
-      "version": "0.3.0",
-      "from": "git+https://github.com/IBM/node-log4js-qradar-syslog-appender.git#v0.3.0",
-      "resolved": "git+https://github.com/IBM/node-log4js-qradar-syslog-appender.git#700997a178259b3dcd1a755d93d8d0f527f753b2",
+      "version": "0.3.1",
+      "from": "log4js-qradar-syslog-appender@0.3.1",
+      "resolved": "https://registry.npmjs.org/log4js-qradar-syslog-appender/-/log4js-qradar-syslog-appender-0.3.1.tgz",
       "dependencies": {
         "log4js": {
-          "version": "0.6.37",
+          "version": "0.6.38",
           "from": "log4js@>=0.6.33 <0.7.0",
-          "resolved": "https://registry.npmjs.org/log4js/-/log4js-0.6.37.tgz"
+          "resolved": "https://registry.npmjs.org/log4js/-/log4js-0.6.38.tgz"
         },
         "semver": {
           "version": "4.3.6",
