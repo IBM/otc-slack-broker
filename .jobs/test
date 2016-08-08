@@ -1,0 +1,12 @@
+#!/bin/bash
+
+bash otc-deploy/cf-apps/common/pipeline.test.setup.sh
+export BUILD_NUMBER=$(<.pipeline_build_id)
+export OTC_API_BROKER_SECRET=$_DEPLOY_OTC_API_BROKER_SECRET
+export url=$_DEPLOY_url
+node test/tapeSlack.js | node_modules/.bin/tap-xunit > test/tapeSlack.xml 
+
+if grep -B 1 -A 5 "<failure>" ./test/*.xml; then
+  echo "Test Failure detected. Exiting."
+  exit 1
+fi

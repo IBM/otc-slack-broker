@@ -1,0 +1,2 @@
+chmod u+x "otc-cf-deploy/deploy"
+"$_"

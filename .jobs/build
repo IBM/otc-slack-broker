@@ -1,0 +1,25 @@
+#!/bin/bash
+set +x
+
+# install dependencies (node 4.2.x, npm 3.5.2)
+npmPath=$(which npm)
+
+if [[ $? = 0 ]]; then
+  npmPath=$(dirname "$npmPath")
+else
+  echo "No npm, something must seriously be wrong."
+  exit 1
+fi
+npm install -g npm@3.5.2
+
+# Set up path for dependencies.
+export PATH="$npmPath":/opt/IBM/node-v4.2/bin:"$PATH"
+
+npm -v
+
+set +x
+git clone "https://$IDS_USER:$IDS_PASS@github.ibm.com/org-ids/otc-deploy"
+git clone --branch "v1.0.6" "https://$IDS_USER:$IDS_PASS@github.ibm.com/org-ids/otc-cf-deploy"
+set -x
+
+bash otc-deploy/cf-apps/common/pipeline.build.sh

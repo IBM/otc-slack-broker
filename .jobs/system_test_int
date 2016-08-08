@@ -1,0 +1,5 @@
+#!/bin/bash
+set +x
+git clone "https://$IDS_USER:$IDS_PASS@github.ibm.com/org-ids/otc-system-test"
+set -x
+otc-system-test/scripts/systemTests.sh -c otc-slack-broker -p $TEST_PASSWORD ys1-int

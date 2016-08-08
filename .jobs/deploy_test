@@ -1,0 +1,2 @@
+#!/bin/bash
+"otc-deploy/cf-apps/otc-x-broker/pipeline.deploy.test.sh"

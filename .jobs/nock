@@ -1,0 +1,33 @@
+#!/bin/bash
+
+bash otc-deploy/cf-apps/common/pipeline.test.setup.sh
+export BUILD_NUMBER=$(<.pipeline_build_id)
+export NOCK_MODE=true
+# export DEBUG=nock.*
+
+# install dependencies (node 4.2.x, npm 3.5.2)
+npmPath=$(which npm)
+
+if [[ $? = 0 ]]; then
+  npmPath=$(dirname "$npmPath")
+else
+  echo "No npm, something must seriously be wrong."
+  exit 1
+fi
+
+npm install -g npm@3.5.2
+
+# Set up path for dependencies.
+export PATH=$npmPath:/opt/IBM/node-v4.2/bin:$PATH
+
+# Install dev-dependencies.
+npm install
+
+node --version
+
+node test/tapeSlack.js | node_modules/.bin/tap-xunit > test/tapeSlack.xml 
+
+if grep -B 1 -A 5 "<failure>" ./test/*.xml; then
+  echo "Test Failure detected. Exiting."
+  exit 1
+fi
