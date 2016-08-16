@@ -1,0 +1,149 @@
+#!/bin/bash
+
+###############################################################################
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corporation 2015, 2015. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+###############################################################################
+
+usage () {
+	cat <<'USAGE'
+SYNOPSIS
+--------
+export UCD_COMPONENT=...
+export UCD_USERNAME=...
+export UCD_PASSWORD=...
+echo "<a commit sh>-$(date +%Y%m%d%H%M%Z)" > .pipeline_build_id
+pipeline.publish.sh
+ENVIRONMENT VARIABLES
+---------------------
+Most options are specified as environment variables:
+UCD_COMPONENT
+ The component in UCD to publish a version to.
+UCD_USERNAME
+
+  The username to use when publishing to UCD.
+UCD_PASSWORD
+  The password to use when publishing to UCD.
+FILES
+-----
+.pipeline_build_id
+    The contents of this file will contain the name of the pipeline build.
+    This file is required in order for a version to be published, and should
+    contain a Git commit id, followed by a dash (-) followed by a timestamp
+    (with timezone).
+DESCRIPTION
+-----------
+Publishes the contents of the working directory to the UCD_COMPONENT
+component in the https://ucdeploy.swg-devops.com UCD server.
+The name of the version will be
+TIPS
+----
+This script is intended to be run as part of a Pipeline.  If it's not, make
+sure to specify all of the environment variables in the usage above.
+USAGE
+}
+
+SCRIPT_NAME=$(basename "$0")
+UCD_SERVER_URL=https://ucdeploy.swg-devops.com
+UCD_CLIENT_URL=https://ucdeploy.swg-devops.com/tools/udclient.zip
+TMPDIR=/tmp/pipeline.publish.$$
+
+main () {
+    echo "LMS-API-$BUILD_NUMBER-$(date +%Y%m%d%H%M%Z)" > .pipeline_build_id
+    cat .pipeline_build_id
+
+    if ! [ -s .pipeline_build_id ]; then
+	usage >&2
+	echo ".pipeline_build_id: Pipeline build id file not found or empty" >&2
+	return 1
+    fi
+
+    if ! [ "$UCD_USERNAME" ]; then
+	usage >&2
+	echo "Required environment variable, UCD_USERNAME is not specified" >&2
+	return 1
+    fi
+
+    if ! [ "$UCD_PASSWORD" ]; then
+	usage >&2
+	echo "Required environment variable, UCD_PASSWORD is not specified" >&2
+	return 1
+    fi
+
+    if ! [ "$UCD_COMPONENT" ]; then
+	usage >&2
+	echo "Required environment variable, UCD_COMPONENT is not specified" >&2
+	return 1
+    fi
+
+    echo "- Fetching the UCD client"
+    if ! curl "$UCD_CLIENT_URL" > "$TMPDIR/udclient.zip"; then
+	echo "$UCD_CLIENT_URL: Could not fetch the UCD client." >&2
+	return 1
+    fi
+
+    echo "- Installing the UCD client"
+    if ! unzip -d "$TMPDIR/udclient" "$TMPDIR/udclient.zip"; then
+	echo "$TMPDIR/udclient.zip: Could not expand the UCD client to a temporary location, $TMPDIR/udclient"
+	return 1
+    fi
+
+    UCD=$TMPDIR/udclient/udclient/udclient
+
+    # Just as a sanity check, silently try running UCD.  If there were any
+    # problems, let the user know by running it again; not silently.
+    #
+    if ! "$UCD" >/dev/null 2>&1; then
+	"$UCD"
+	echo "$UCD: Could not run UCD" >&2
+	return 1
+    fi
+
+    VERSION_NAME=$(<.pipeline_build_id)
+    echo "- Creating a new version in UCD, $VERSION_NAME"
+    if ! "$UCD" \
+	-weburl "$UCD_SERVER_URL" \
+	-username "$UCD_USERNAME" \
+	-password "$UCD_PASSWORD" \
+	createVersion \
+	-component "$UCD_COMPONENT" \
+	-name "$VERSION_NAME"
+    then
+	echo "$VERSION_NAME: Could not create a new version in the UCD component, $UCD_COMPONENT" >&2
+	return 1
+    fi
+
+    echo "- Importing sources into verion $VERSION_NAME of $UCD_COMPONENT"
+    if ! "$UCD" \
+	-weburl "$UCD_SERVER_URL" \
+	-username "$UCD_USERNAME" \
+	-password "$UCD_PASSWORD" \
+	addVersionFiles \
+	-component "$UCD_COMPONENT" \
+	-version "$VERSION_NAME" \
+	-saveExecuteBits true \
+	-base "$PWD"
+    then
+	echo "$VERSION_NAME: Could not import sources into a version of UCD component, $UCD_COMPONENT" >&2
+	return 1
+    fi
+
+    # All done.
+    echo "- All done."
+}
+
+if ! mkdir -p "$TMPDIR"; then
+    echo "$TMPDIR: Could not create a temporary directory" >&2
+    exit 1
+fi
+
+main "$@"
+
+RESULT=$?
+rm -rf "$TMPDIR"
+exit "$RESULT"
+
