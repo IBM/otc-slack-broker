@@ -53,7 +53,7 @@ UCD_CLIENT_URL=https://ucdeploy.swg-devops.com/tools/udclient.zip
 TMPDIR=/tmp/pipeline.publish.$$
 
 main () {
-    echo "LMS-API-$BUILD_NUMBER-$(date +%Y%m%d%H%M%Z)" > .pipeline_build_id
+    echo "OTC-SLACK-BROKER-$BUILD_NUMBER-$(date +%Y%m%d%H%M%Z)" > .pipeline_build_id
     cat .pipeline_build_id
 
     if ! [ -s .pipeline_build_id ]; then
@@ -146,4 +146,3 @@ main "$@"
 RESULT=$?
 rm -rf "$TMPDIR"
 exit "$RESULT"
-
