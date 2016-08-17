@@ -1,0 +1,42 @@
+#!/bin/bash -x
+
+#jml variables expected to be defined for environment
+export CF_USER=$("$IAAS_LOCATION" -j -c "$JML_FILE" get-env-param -f -p "main_user_name") 
+export CF_PASS=$("$IAAS_LOCATION" -j -c "$JML_FILE" get-env-param -f -p "password") 
+export CF_DOMAIN=$("$IAAS_LOCATION" -j -c "$JML_FILE" get-env-param -f -p "bluemix_env_domain")
+export CF_ENV=$(echo "$CF_DOMAIN" | sed -n "s/^\([^\.]*\)\..*/\1/p")
+
+#logmet
+export LOGGING_ORG="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_org)"
+export LOGGING_SPACE="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_space)"
+export LOGGING_HOST="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_logstash_host)"
+export LOGGING_PORT="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_logstash_port)"
+export LOGGING_TOKEN="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_token)"
+export LOGGING_SPACE_GUID="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_space_id)"
+
+#deploy the app first
+chmod 755 .jobs/*
+.jobs/deploy
+
+#environment variables required for running slack broker
+cf set-env otc-slack-broker-blue ENABLE_NEW_RELIC true
+cf set-env otc-slack-broker-blue LOG4J_LEVEL DEBUG
+cf set-env otc-slack-broker-blue NEW_RELIC_APP_NAME otc-slack-broker-ys1
+cf set-env otc-slack-broker-blue NEW_RELIC_LICENSE_KEY 26c5f096f5ec0f41c3bf1972e7961fa9db553b75
+cf set-env otc-slack-broker-blue OTC_API_BROKER_SECRET LIyBrsboF3KLeWKNlpR21wLwoXGYI4Tw51bHgJPsK1rDjZFqPT
+cf set-env otc-slack-broker-blue SECGRP GRP3DEVS
+cf set-env otc-slack-broker-blue TIAM_CLIENT_ID slack
+cf set-env otc-slack-broker-blue TIAM_URL https://devops-api.$CF_ENV.bluemix.net/v1/identity
+cf set-env otc-slack-broker-blue _vcap_services__cloudantNoSQLDB__0__credentials__url https://bmdevops-ys1-us-south:mnfsd764jndhflITDYmegl83m@bmdevops-ys1-us-south.cloudant.com
+cf set-env otc-slack-broker-blue icons__github https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png
+cf set-env otc-slack-broker-blue icons__pipeline http://blade-resources.mybluemix.net/pipeline.png
+cf set-env otc-slack-broker-blue icons__toolchain http://blade-resources.mybluemix.net/toolchain-32.png
+cf set-env otc-slack-broker-blue log4js_logmet_component otc-slack-broker
+cf set-env otc-slack-broker-blue log4js_logmet_enabled true
+cf set-env otc-slack-broker-blue log4js_logmet_logging_host $LOGGING_HOST
+cf set-env otc-slack-broker-blue log4js_logmet_logging_port $LOGGING_PORT
+cf set-env otc-slack-broker-blue log4js_logmet_logging_token $LOGGING_TOKEN
+cf set-env otc-slack-broker-blue log4js_logmet_space_id $LOGGING_SPACE_GUID
+cf set-env otc-slack-broker-blue services__otc_api https://otc-api.$CF_ENV.bluemix.net/api/v1
+cf set-env otc-slack-broker-blue services__otc_ui https://dev-console.$CF_ENV.bluemix.net/devops
+cf set-env otc-slack-broker-blue services__slack_api https://slack.com/api
