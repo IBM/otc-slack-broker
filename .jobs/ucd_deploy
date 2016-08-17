@@ -15,7 +15,7 @@ export LOGGING_TOKEN="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_l
 export LOGGING_SPACE_GUID="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_space_id)"
 
 #be sure we are logged into proper api
-cf api https://api.$CF_ENV.blumeix.net
+cf api https://api.$CF_ENV.bluemix.net
 cf login -u "$CF_USER" -p "$CF_PASS" -o "$CF_ORG" -s "$CF_SPACE"
 
 #deploy the app first
