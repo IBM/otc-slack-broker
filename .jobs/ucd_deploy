@@ -1,10 +1,20 @@
 #!/bin/bash -x
 
 #jml variables expected to be defined for environment
-export CF_USER=$("$IAAS_LOCATION" -j -c "$JML_FILE" get-env-param -f -p "main_user_name") 
-export CF_PASS=$("$IAAS_LOCATION" -j -c "$JML_FILE" get-env-param -f -p "password") 
-export CF_DOMAIN=$("$IAAS_LOCATION" -j -c "$JML_FILE" get-env-param -f -p "bluemix_env_domain")
+ADMIN_USER="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_cf_username)"
+ADMIN_PASSWORD="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_cf_password)"
+DOMAIN="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p bluemix_env_domain)"
 export CF_ENV=$(echo "$CF_DOMAIN" | sed -n "s/^\([^\.]*\)\..*/\1/p")
+CF_ORG=BluemixDevOpsORG
+CF_SPACE=dev
+TMP="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_org)"
+if [ $? -eq 0 ]; then
+    CF_ORG="$TMP"
+fi
+TMP="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_space)"
+if [ $? -eq 0 ]; then
+    CF_SPACE="$TMP"
+fi
 
 #logmet
 export LOGGING_ORG="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_org)"
@@ -15,8 +25,8 @@ export LOGGING_TOKEN="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_l
 export LOGGING_SPACE_GUID="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_logging_space_id)"
 
 #be sure we are logged into proper api
-cf api https://api.$CF_ENV.bluemix.net
-cf login -u "$CF_USER" -p "$CF_PASS" -o "$CF_ORG" -s "$CF_SPACE"
+cf api https://api.$DOMAIN
+cf login -u "$ADMIN_USER" -p "$ADMIN_PASSWORD" -o "$CF_ORG" -s "$CF_SPACE"
 
 #deploy the app first
 chmod 755 .jobs/*
