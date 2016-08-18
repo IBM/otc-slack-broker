@@ -311,7 +311,7 @@ test('Slack Broker - Test PATCH update instance with channel_name', function (t)
     t.plan(5);
     
     // Sleep 3s to not overload Slack - Workaround but may lead to trouble in prod ?
-    sleep(3);
+    //sleep(3);
 	
     var body = {
         'service_id': 'slack',
