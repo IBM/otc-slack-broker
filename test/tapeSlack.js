@@ -220,7 +220,7 @@ test("Slack Broker - Create Test TIAM Creds", function(t) {
 });
 
 test('Slack Broker - Test PUT instance', function (t) {
-    t.plan(8);
+    t.plan(9);
 
     var anUrl = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     var body = {};
@@ -229,6 +229,7 @@ test('Slack Broker - Test PUT instance', function (t) {
 	    function(callback) {
 	        putRequest(anUrl, {header: header, body: null})
 	        .then(function(resultNoBody) {
+	        	t.comment(JSON.stringify(resultNoBody.body));
 	            t.equal(resultNoBody.statusCode, 400, 'did the put instance call with no body fail?');
 	            callback();
 	        });
@@ -237,7 +238,17 @@ test('Slack Broker - Test PUT instance', function (t) {
             body.service_id = 'slack';
             putRequest(anUrl, {header: header, body: JSON.stringify(body)})
             .then(function(resultNoOrg) {
-                t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
+	        	t.comment(JSON.stringify(resultNoOrg.body));
+                t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no org fail?');
+                callback();
+            });	    	
+	    },
+	    function(callback) {
+            body.organization_guid = organization_guid;
+            putRequest(anUrl, {header: header, body: JSON.stringify(body)})
+            .then(function(resultNoOrg) {
+	        	t.comment(JSON.stringify(resultNoOrg.body));
+                t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service creds fail?');
                 callback();
             });	    	
 	    },
@@ -245,12 +256,12 @@ test('Slack Broker - Test PUT instance', function (t) {
             body.service_credentials = tiamCredentials.service_credentials;
             putRequest(anUrl, {header: header, body: JSON.stringify(body)})
             .then(function(resultNoOrg) {
-                t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no service id fail?');
+	        	t.comment(JSON.stringify(resultNoOrg.body));
+                t.equal(resultNoOrg.statusCode, 400, 'did the put instance call with no api token fail?');
                 callback();
             });	    	
 	    },
 	    function(callback) {
-            body.organization_guid = organization_guid;
             body.parameters = {
             	api_token: nconf.get("slack_token"),
             	channel_name: slack_channel.name.replace("bot", "bis"),
@@ -303,6 +314,7 @@ test('Slack Broker - Test PUT update instance w/o parameters', function (t) {
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     putRequest(url, {header: header, body: JSON.stringify(body)})
         .then(function(resultFromPut) {
+        	t.comment(JSON.stringify(resultFromPut.body));
             t.equal(resultFromPut.statusCode, 400, 'did the put instance call failed?');
     });
 });
@@ -361,7 +373,7 @@ test('Slack Broker - Test PATCH update instance with wrong api_key', function (t
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     patchRequest(url, {header: header, body: JSON.stringify(body)})
         .then(function(resultFromPatch) {
-        	//t.comment(JSON.stringify(resultFromPatch));
+        	t.comment(JSON.stringify(resultFromPatch.body));
             t.equal(resultFromPatch.statusCode, 400, 'did the patch instance with wrong api key failed ?');
             //t.comment("resultFromPatch.body=" + JSON.stringify(resultFromPatch.body));
     });    				
@@ -403,6 +415,7 @@ test('Slack Broker - Test PUT bind instance to toolchain', function (t) {
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId + '/toolchains/'+ mockToolchainId;
     putRequest(url, {header: header})
         .then(function(resultsFromBind) {
+        	t.comment(JSON.stringify(resultsFromBind.body));
             t.equal(resultsFromBind.statusCode, 400, 'did the bind instance w/o toolchain_credentials failed?');
             putRequest(url, {header: header, body: JSON.stringify({toolchain_credentials: tiamCredentials.toolchain_credentials})})
             	.then(function(resultsFromBind) {
@@ -651,6 +664,7 @@ test('Slack Broker - Test PUT update instance w/ an invalid org id', function (t
     var url = nconf.get('url') + '/slack-broker/api/v1/service_instances/' + mockServiceInstanceId;
     putRequest(url, {header: header, body: JSON.stringify(body)})
         .then(function(resultFromPut) {
+        	t.comment(JSON.stringify(resultFromPut.body));
             t.equal(resultFromPut.statusCode, 400, 'did the put instance call fail with no organization_guid?');
     });
 });
