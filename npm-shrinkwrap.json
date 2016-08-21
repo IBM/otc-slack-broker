@@ -31,10 +31,37 @@
           "from": "concat-map@0.0.1",
           "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
         },
+        "d": {
+          "version": "0.1.1",
+          "from": "d@>=0.1.1 <0.2.0",
+          "resolved": "https://registry.npmjs.org/d/-/d-0.1.1.tgz"
+        },
         "dtrace-provider": {
           "version": "0.6.0",
           "from": "dtrace-provider@>=0.6.0 <0.7.0",
           "resolved": "https://registry.npmjs.org/dtrace-provider/-/dtrace-provider-0.6.0.tgz"
+        },
+        "es5-ext": {
+          "version": "0.10.11",
+          "from": "es5-ext@>=0.10.11 <0.11.0",
+          "resolved": "https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.11.tgz",
+          "dependencies": {
+            "es6-symbol": {
+              "version": "3.0.2",
+              "from": "es6-symbol@>=3.0.2 <3.1.0",
+              "resolved": "https://registry.npmjs.org/es6-symbol/-/es6-symbol-3.0.2.tgz"
+            }
+          }
+        },
+        "es6-iterator": {
+          "version": "2.0.0",
+          "from": "es6-iterator@>=2.0.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/es6-iterator/-/es6-iterator-2.0.0.tgz"
+        },
+        "es6-symbol": {
+          "version": "3.1.0",
+          "from": "es6-symbol@>=3.1.0 <3.2.0",
+          "resolved": "http://173.192.225.82:8080/e/es6-symbol/_attachments/es6-symbol-3.1.0.tgz"
         },
         "glob": {
           "version": "6.0.4",
@@ -680,6 +707,11 @@
       "version": "1.1.1",
       "from": "http-signature@>=1.1.0 <1.2.0",
       "resolved": "https://registry.npmjs.org/http-signature/-/http-signature-1.1.1.tgz"
+    },
+    "i18n": {
+      "version": "0.1.17",
+      "from": "git+https://github.ibm.com/org-ids/node-i18n#v0.1.17",
+      "resolved": "git+https://github.ibm.com/org-ids/node-i18n#7b858bbd3e2772d367b50146bb14c34407b352eb"
     },
     "iconv-lite": {
       "version": "0.4.13",
