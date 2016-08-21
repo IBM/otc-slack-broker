@@ -1,19 +1,24 @@
 #!/bin/bash -x
 
+export CF_APP=otc-slack-broker
+
 #jml variables expected to be defined for environment
 ADMIN_USER="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_cf_username)"
 ADMIN_PASSWORD="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_cf_password)"
 DOMAIN="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p bluemix_env_domain)"
-export CF_ENV=$(echo "$CF_DOMAIN" | sed -n "s/^\([^\.]*\)\..*/\1/p")
-CF_ORG=BluemixDevOpsORG
-CF_SPACE=dev
+
+export CF_ENV=$(echo "$DOMAIN" | sed -n "s/^\([^\.]*\)\..*/\1/p")
 TMP="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_org)"
 if [ $? -eq 0 ]; then
     CF_ORG="$TMP"
+else
+    CF_ORG=BluemixDevOpsORG
 fi
 TMP="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p otc_space)"
 if [ $? -eq 0 ]; then
     CF_SPACE="$TMP"
+else
+    CF_SPACE=dev
 fi
 
 #logmet
@@ -27,6 +32,9 @@ export LOGGING_SPACE_GUID="$($IAAS_LOCATION -j -c $JML_FILE get-env-param -f -p 
 #be sure we are logged into proper api
 cf api https://api.$DOMAIN
 cf login -u "$ADMIN_USER" -p "$ADMIN_PASSWORD" -o "$CF_ORG" -s "$CF_SPACE"
+
+#replace domain with dedicated $DOMAIN
+cat manifest.mf | sed -e 's/stage1.ng.bluemix.net/$DOMAIN/g'
 
 #deploy the app first
 chmod 755 .jobs/*
@@ -55,3 +63,8 @@ cf set-env otc-slack-broker-blue log4js_logmet_space_id $LOGGING_SPACE_GUID
 cf set-env otc-slack-broker-blue services__otc_api https://otc-api.$CF_ENV.bluemix.net/api/v1
 cf set-env otc-slack-broker-blue services__otc_ui https://dev-console.$CF_ENV.bluemix.net/devops
 cf set-env otc-slack-broker-blue services__slack_api https://slack.com/api
+cf set-env otc-slack-broker-blue url https://otc-slack-broker.$DOMAIN
+
+cf restage otc-slack-broker-blue
+
+exit $RC
