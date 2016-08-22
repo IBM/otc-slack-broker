@@ -103,20 +103,6 @@ function validateConfSync() {
 		process.exit(1);
     }	
     
-    // Ensure slack URL is well formatted
-    var slack_url = nconf.get("services:slack_api");
-    if (slack_url) {
-    	// ensure final / is there
-    	if (slack_url.charAt(slack_url.length - 1) != '/') {
-    		slack_url += "/";
-        	// use overrides as it may come from a readonly provider
-    	    nconf.overrides({"services": { "slack_api": slack_url}});
-    	}
-    } else {
-    	// set the default one using overrides as it may come from a readonly provider
-	    nconf.overrides({"services": {"slack_api": "https://slack.com/api/"}});    	
-    }
-	
 	/* Make sure that important bits of VCAP_SERVICES are defined. */
 	// Cloudant Service thru binding is not stable (because of service type name)
 	// Look for the first vcap_services:cloudantNoSQLDB* and set it to cloudantNoSQLDBService
