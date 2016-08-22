@@ -96,20 +96,22 @@ fi
 export app_otc_status="https://otc-status.$DOMAIN"
 
 # Environment variables dedicated to slack broker defined using export app_<variable>
-export app_ENABLE_NEW_RELIC=true
-export app_NEW_RELIC_APP_NAME="otc-slack-broker-$DOMAIN"
-export app_NEW_RELIC_LICENSE_KEY=26c5f096f5ec0f41c3bf1972e7961fa9db553b75
-export app_OTC_API_BROKER_SECRET=LIyBrsboF3KLeWKNlpR21wLwoXGYI4Tw51bHgJPsK1rDjZFqPT
 export app_TIAM_CLIENT_ID=slack
 export app_TIAM_URL="https://devops-api.$DOMAIN/v1/identity"
 export app_icons__github=https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png
 export app_icons__pipeline=http://blade-resources.mybluemix.net/pipeline.png
 export app_icons__toolchain=http://blade-resources.mybluemix.net/toolchain-32.png
-
 export app_services__otc_api=https://otc-api.$DOMAIN.bluemix.net/api/v1
 export app_services__otc_ui=https://dev-console.$DOMAIN.bluemix.net/devops
 export app_services__slack_api=https://slack.com/api
 
-chmod u+x "$(dirname "$0")/../../otc-cf-deploy/deploy"
+# TO BE REFINED
+export app_ENABLE_NEW_RELIC="$ENABLE_NEW_RELIC"
+export app_NEW_RELIC_APP_NAME="otc-slack-broker-$DOMAIN"
+export app_NEW_RELIC_LICENSE_KEY="$NEW_RELIC_LICENSE_KEY"
+
+export app_OTC_API_BROKER_SECRET=LIyBrsboF3KLeWKNlpR21wLwoXGYI4Tw51bHgJPsK1rDjZFqPT
+
+chmod u+x "$(dirname "$0")/../otc-cf-deploy/deploy"
 "$_" "$@"
 
