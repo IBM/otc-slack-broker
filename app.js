@@ -118,13 +118,21 @@ function validateConfSync() {
     }
 	
 	/* Make sure that important bits of VCAP_SERVICES are defined. */
-	if (!nconf.get("_vcap_services:cloudantNoSQLDB:0:credentials:url")) {
+	// Cloudant Service thru binding is not stable (because of service type name)
+	// Look for the first vcap_services:cloudantNoSQLDB* and set it to cloudantNoSQLDBService
+	var cloudantNoSQLDBServices = _.find(nconf.get("_vcap_services"), function(service, key) { return key.indexOf("cloudantNoSQLDB") == 0 });
+	if (cloudantNoSQLDBServices && (_.isArray(cloudantNoSQLDBServices) || _.has(cloudantNoSQLDBServices, "0"))) {
+		nconf.set("cloudantNoSQLDBService", cloudantNoSQLDBServices[0]);
+	}
+	
+	if (!nconf.get("cloudantNoSQLDBService:credentials:url")) {
 		util.log(
 			"Could not figure out the database server url. Either run this on Bluemix or point a config file containing at least the following: \n\n" +
 			JSON.stringify({ _vcap_services: { cloudantNoSQLDB: [ { credentials: { url: "https://url" } } ] } })
 		);
 		process.exit(1);
 	}
+    
 }
 
 function configureAppSync(db) {
@@ -204,7 +212,7 @@ function createDb(callback) {
 		maxKeepAliveTime: 30000
 	});
 	var nanoObj = nano(
-		nconf.get("_vcap_services:cloudantNoSQLDB:0:credentials:url"),
+		nconf.get("cloudantNoSQLDBService:credentials:url"),
 		{ requestDefaults: { agent: keepAliveAgent } }
 	);
 
