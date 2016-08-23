@@ -60,6 +60,7 @@ set -x
 #
 export CF_APP="otc-slack-broker"
 export DOMAIN=$(iaas_get bluemix_env_domain)
+export ENV=$(iaas_get bluemix_env_name)
 export ROUTE="otc-slack-broker"
 export TEST_URL_PATH="/status"
 
@@ -101,12 +102,12 @@ export app_TIAM_URL="https://devops-api.$DOMAIN/v1/identity"
 export app_icons__github=https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png
 export app_icons__pipeline=http://blade-resources.mybluemix.net/pipeline.png
 export app_icons__toolchain=http://blade-resources.mybluemix.net/toolchain-32.png
-export app_services__otc_api=https://otc-api.$DOMAIN.bluemix.net/api/v1
-export app_services__otc_ui=https://dev-console.$DOMAIN.bluemix.net/devops
+export app_services__otc_api=https://otc-api.$DOMAIN/api/v1
+export app_services__otc_ui=https://dev-console.$DOMAIN/devops
 export app_services__slack_api=https://slack.com/api
 
 export app_ENABLE_NEW_RELIC="$ENABLE_NEW_RELIC"
-export app_NEW_RELIC_APP_NAME="otc-slack-broker-$DOMAIN"
+export app_NEW_RELIC_APP_NAME="$CF_APP-$ENV"
 export app_NEW_RELIC_LICENSE_KEY="$NEW_RELIC_LICENSE_KEY"
 
 # TO BE REFINED
