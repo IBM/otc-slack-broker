@@ -110,8 +110,7 @@ export app_ENABLE_NEW_RELIC="$ENABLE_NEW_RELIC"
 export app_NEW_RELIC_APP_NAME="$CF_APP-$ENV"
 export app_NEW_RELIC_LICENSE_KEY="$NEW_RELIC_LICENSE_KEY"
 
-# TO BE REFINED
-export app_OTC_API_BROKER_SECRET=LIyBrsboF3KLeWKNlpR21wLwoXGYI4Tw51bHgJPsK1rDjZFqPT
+export app_OTC_API_BROKER_SECRET="$OTC_API_BROKER_SECRET"
 
 chmod u+x "$(dirname "$0")/../otc-cf-deploy/deploy"
 "$_" "$@"
