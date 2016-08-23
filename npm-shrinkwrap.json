@@ -881,9 +881,9 @@
       }
     },
     "log4js-qradar-syslog-appender": {
-      "version": "0.3.1",
-      "from": "log4js-qradar-syslog-appender@0.3.1",
-      "resolved": "https://registry.npmjs.org/log4js-qradar-syslog-appender/-/log4js-qradar-syslog-appender-0.3.1.tgz",
+      "version": "0.3.3",
+      "from": "log4js-qradar-syslog-appender@0.3.3",
+      "resolved": "https://registry.npmjs.org/log4js-qradar-syslog-appender/-/log4js-qradar-syslog-appender-0.3.3.tgz",
       "dependencies": {
         "log4js": {
           "version": "0.6.38",
