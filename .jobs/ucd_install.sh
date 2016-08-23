@@ -105,11 +105,11 @@ export app_services__otc_api=https://otc-api.$DOMAIN.bluemix.net/api/v1
 export app_services__otc_ui=https://dev-console.$DOMAIN.bluemix.net/devops
 export app_services__slack_api=https://slack.com/api
 
-# TO BE REFINED
 export app_ENABLE_NEW_RELIC="$ENABLE_NEW_RELIC"
 export app_NEW_RELIC_APP_NAME="otc-slack-broker-$DOMAIN"
 export app_NEW_RELIC_LICENSE_KEY="$NEW_RELIC_LICENSE_KEY"
 
+# TO BE REFINED
 export app_OTC_API_BROKER_SECRET=LIyBrsboF3KLeWKNlpR21wLwoXGYI4Tw51bHgJPsK1rDjZFqPT
 
 chmod u+x "$(dirname "$0")/../otc-cf-deploy/deploy"
