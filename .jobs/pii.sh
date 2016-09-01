@@ -20,5 +20,5 @@ find . -type f | egrep -i "/[^_]+\.properties$" | xargs -i cp --parents {} archi
 find . -type f | egrep -i "/.+_en\.json$" | xargs -i cp --parents {} archive
 
 # Recursively check all .properties files
-chmod u+x otc-deploy/tools/chkpli06.exe
-./otc-deploy/tools/chkpli06.exe "archive/*.properties" -OS -S
+chmod u+x otc-deploy/tools/chkpli.exe
+./otc-deploy/tools/chkpli.exe "archive/*.properties" -OS -S
